@@ -5,7 +5,7 @@ import { CoffeeCategory } from '../../types/coffee';
 import { MENU_ITEMS } from '../../data/coffeeData';
 import { MenuCard } from '../../components/menu/MenuCard';
 import { useOrder } from '../../context/OrderContext';
-import { Search, SlidersHorizontal, Sparkles, Coffee } from 'lucide-react';
+import { Search, Cake, Sparkles } from 'lucide-react';
 
 export default function OrderPage() {
   const { addToCart } = useOrder();
@@ -13,13 +13,13 @@ export default function OrderPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const categories: { id: CoffeeCategory | 'all'; label: string; count: number }[] = [
-    { id: 'all', label: 'All Items', count: MENU_ITEMS.length },
-    { id: 'espresso', label: 'Espresso & Classics', count: MENU_ITEMS.filter((i) => i.category === 'espresso').length },
+    { id: 'all', label: 'All Treats & Coffee', count: MENU_ITEMS.length },
+    { id: 'pastries', label: 'Cakes & Cupcakes', count: MENU_ITEMS.filter((i) => i.category === 'pastries').length },
     { id: 'signature-lattes', label: 'Signature Lattes', count: MENU_ITEMS.filter((i) => i.category === 'signature-lattes').length },
+    { id: 'espresso', label: 'Artisan Espresso', count: MENU_ITEMS.filter((i) => i.category === 'espresso').length },
     { id: 'cold-brew', label: 'Cold Brew & Nitro', count: MENU_ITEMS.filter((i) => i.category === 'cold-brew').length },
-    { id: 'pour-over', label: 'Pour Over & Filter', count: MENU_ITEMS.filter((i) => i.category === 'pour-over').length },
-    { id: 'pastries', label: 'Artisan Bakery', count: MENU_ITEMS.filter((i) => i.category === 'pastries').length },
-    { id: 'beans', label: 'Whole Bean Bags', count: MENU_ITEMS.filter((i) => i.category === 'beans').length },
+    { id: 'pour-over', label: 'Pour Over Filter', count: MENU_ITEMS.filter((i) => i.category === 'pour-over').length },
+    { id: 'beans', label: 'Specialty Beans', count: MENU_ITEMS.filter((i) => i.category === 'beans').length },
   ];
 
   const filteredItems = MENU_ITEMS.filter((item) => {
@@ -31,50 +31,50 @@ export default function OrderPage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-[#FDFBF7]">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-[#2D2020]">
       
-      {/* Header & Search Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#2C2623] pb-6">
+      {/* Header & Search */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#F8D7DF] pb-6">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#C88A58]">
-            Click & Sip Ahead
+          <span className="text-xs font-bold uppercase tracking-wider text-[#E84A74]">
+            SweetCrumbs Order Ahead
           </span>
-          <h1 className="font-serif font-bold text-3xl sm:text-4xl text-[#FDFBF7] mt-1">
-            Artisan Cafe Menu
+          <h1 className="font-serif font-bold text-3xl sm:text-4xl text-[#2D2020] mt-1">
+            Artisan Cakes, Treats & Coffee
           </h1>
-          <p className="text-xs text-[#A89F91] mt-1">
-            Select your favorite roast, customize your milk and syrup pumps, and pick up fresh on the bar.
+          <p className="text-xs text-[#7A6767] mt-1">
+            Order your favorite birthday cakes, fruit slices, and hand-pulled espresso drinks ahead for pickup.
           </p>
         </div>
 
         {/* Search Input */}
         <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 text-[#A89F91] absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#8C7575] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search drinks, notes, beans..."
-            className="w-full bg-[#1C1917] border border-[#2E2824] focus:border-[#C88A58] text-[#FDFBF7] text-xs rounded-2xl pl-10 pr-4 py-3 focus:outline-none transition-colors"
+            placeholder="Search cakes, lattes, flavors..."
+            className="w-full bg-white border border-[#F8D7DF] focus:border-[#E84A74] text-[#2D2020] text-xs rounded-2xl pl-10 pr-4 py-3 focus:outline-none transition-colors shadow-xs"
           />
         </div>
       </div>
 
-      {/* Category Filter Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+      {/* Category Pills */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2">
         {categories.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
             className={`px-4 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
               selectedCategory === cat.id
-                ? 'bg-[#965B32] text-white shadow-md shadow-[#965B32]/30'
-                : 'bg-[#1C1917] border border-[#2E2824] text-[#A89F91] hover:border-[#3E352F] hover:text-[#FDFBF7]'
+                ? 'bg-[#E84A74] text-white shadow-sm'
+                : 'bg-white border border-[#F8D7DF] text-[#5D4A4A] hover:bg-[#FFF0F3]'
             }`}
           >
             <span>{cat.label}</span>
             <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-              selectedCategory === cat.id ? 'bg-[#14110F] text-[#C88A58]' : 'bg-[#2A2421] text-[#A89F91]'
+              selectedCategory === cat.id ? 'bg-white text-[#E84A74]' : 'bg-[#FDE8ED] text-[#8C7575]'
             }`}>
               {cat.count}
             </span>
@@ -82,26 +82,26 @@ export default function OrderPage() {
         ))}
       </div>
 
-      {/* Menu Cards Grid */}
+      {/* Grid */}
       {filteredItems.length === 0 ? (
         <div className="py-20 text-center space-y-3">
-          <div className="w-16 h-16 rounded-2xl bg-[#1C1917] mx-auto flex items-center justify-center text-[#6E645C]">
-            <Coffee className="w-8 h-8" />
+          <div className="w-16 h-16 rounded-2xl bg-[#FFF0F3] mx-auto flex items-center justify-center text-[#E84A74]">
+            <Cake className="w-8 h-8" />
           </div>
-          <h3 className="font-serif font-bold text-xl text-[#FDFBF7]">No matching coffee found</h3>
-          <p className="text-xs text-[#A89F91]">Try searching for a different flavor note like "vanilla", "lavender", or clear the filter.</p>
+          <h3 className="font-serif font-bold text-xl text-[#2D2020]">No matching items found</h3>
+          <p className="text-xs text-[#8C7575]">Try clearing search or checking another category.</p>
           <button
             onClick={() => {
               setSelectedCategory('all');
               setSearchQuery('');
             }}
-            className="text-xs text-[#C88A58] font-bold underline"
+            className="text-xs text-[#E84A74] font-bold underline"
           >
-            Reset All Filters
+            Reset Filters
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {filteredItems.map((item) => (
             <MenuCard
               key={item.id}

@@ -7,13 +7,11 @@ import { Order, OrderStatus } from '../../types/coffee';
 import {
   Clock,
   CheckCircle2,
-  Coffee,
+  Cake,
   Sparkles,
   QrCode,
   ArrowRight,
   Flame,
-  Volume2,
-  RefreshCw,
   ShoppingBag
 } from 'lucide-react';
 import Link from 'next/link';
@@ -25,7 +23,6 @@ export const OrderTracker: React.FC = () => {
 
   const { orders, getOrderById, updateOrderStatus, activeOrder } = useOrder();
 
-  // Find order by searchParam id or latest active order
   const order: Order | undefined = requestedId
     ? getOrderById(requestedId)
     : activeOrder || orders[0];
@@ -46,19 +43,19 @@ export const OrderTracker: React.FC = () => {
 
   if (!order) {
     return (
-      <div className="max-w-xl mx-auto py-16 px-4 text-center text-[#FDFBF7]">
-        <div className="w-16 h-16 rounded-2xl bg-[#24201D] mx-auto flex items-center justify-center text-[#6E645C] mb-4">
+      <div className="max-w-xl mx-auto py-16 px-4 text-center text-[#2D2020]">
+        <div className="w-16 h-16 rounded-2xl bg-[#FFF0F3] mx-auto flex items-center justify-center text-[#E84A74] mb-4">
           <ShoppingBag className="w-8 h-8" />
         </div>
         <h2 className="font-serif font-bold text-2xl mb-2">No Active Order Found</h2>
-        <p className="text-xs text-[#A89F91] mb-6">
-          You haven't placed an order yet or your session was cleared. Browse our artisan menu and order ahead!
+        <p className="text-xs text-[#8C7575] mb-6">
+          You haven't placed an order yet. Browse our bakery and cafe menu to order ahead!
         </p>
         <Link
           href="/order"
-          className="inline-flex items-center gap-2 bg-[#965B32] hover:bg-[#C88A58] text-white text-xs font-bold py-3 px-6 rounded-xl transition-all"
+          className="inline-flex items-center gap-2 bg-[#E84A74] hover:bg-[#D43862] text-white text-xs font-bold py-3 px-6 rounded-xl shadow-md transition-all"
         >
-          <span>Explore Order Menu</span>
+          <span>Explore Menu</span>
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
@@ -74,25 +71,25 @@ export const OrderTracker: React.FC = () => {
     {
       key: 'received',
       title: 'Ticket Queued',
-      description: 'Order sent to Barista KDS display',
+      description: 'Order sent to Bakery & Cafe KDS',
       icon: Clock,
     },
     {
       key: 'brewing',
-      title: 'Grinding & Brewing',
-      description: 'Barista pulling espresso & steaming milk',
+      title: 'Baking & Brewing',
+      description: 'Chefs preparing cake & pulling espresso',
       icon: Flame,
     },
     {
       key: 'ready',
-      title: 'Ready at Pickup Bar',
-      description: 'Hot and ready on the handoff counter',
-      icon: Coffee,
+      title: 'Ready at Counter',
+      description: 'Boxed and ready on handoff bar',
+      icon: Cake,
     },
     {
       key: 'collected',
       title: 'Collected',
-      description: 'Picked up by customer',
+      description: 'Picked up with love!',
       icon: CheckCircle2,
     },
   ];
@@ -117,51 +114,49 @@ export const OrderTracker: React.FC = () => {
   const seconds = timeLeftSec % 60;
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 space-y-6 text-[#FDFBF7]">
+    <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 space-y-6 text-[#2D2020]">
       
       {/* Top Header Card */}
-      <div className="bg-[#1C1917] border border-[#2E2824] rounded-3xl p-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-radial from-[#C88A58]/10 via-transparent to-transparent pointer-events-none" />
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2E2824] pb-4">
+      <div className="bg-white border border-[#F8D7DF] rounded-3xl p-6 shadow-sm relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#F8D7DF] pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold font-mono text-[#C88A58] bg-[#965B32]/20 px-2.5 py-0.5 rounded-full border border-[#C88A58]/30">
+              <span className="text-xs font-bold font-mono text-[#E84A74] bg-[#FFF0F3] px-2.5 py-0.5 rounded-full border border-[#F8D7DF]">
                 Order {order.orderNumber}
               </span>
-              <span className="text-xs text-[#A89F91]">
+              <span className="text-xs text-[#8C7575]">
                 {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
-            <h1 className="font-serif font-bold text-2xl text-[#FDFBF7] mt-1">
+            <h1 className="font-serif font-bold text-2xl text-[#2D2020] mt-1">
               {order.customerName}'s Order
             </h1>
           </div>
 
-          {/* Live Status Badge */}
+          {/* Live Badge */}
           <div className="flex items-center gap-3">
             {order.status === 'ready' ? (
-              <div className="bg-emerald-950/80 border border-emerald-500 text-emerald-300 px-4 py-2 rounded-2xl flex items-center gap-2 animate-pulse shadow-lg shadow-emerald-500/10">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              <div className="bg-[#EAFBF0] border border-emerald-400 text-emerald-800 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-xs">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                 <div>
                   <div className="text-xs font-bold uppercase tracking-wider">Ready on Counter!</div>
-                  <div className="text-[10px] text-emerald-400">Head to handoff station</div>
+                  <div className="text-[10px] text-emerald-700">Collect at SweetCrumbs handoff</div>
                 </div>
               </div>
             ) : order.status === 'brewing' ? (
-              <div className="bg-amber-950/80 border border-amber-500 text-amber-300 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg shadow-amber-500/10">
-                <Flame className="w-5 h-5 text-amber-400 animate-bounce" />
+              <div className="bg-[#FFF0F3] border border-[#E84A74] text-[#E84A74] px-4 py-2 rounded-2xl flex items-center gap-2 shadow-xs">
+                <Flame className="w-5 h-5 text-[#E84A74] animate-bounce" />
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-wider">Brewing Now</div>
-                  <div className="text-[10px] text-amber-400">~{minutes}m {seconds}s remaining</div>
+                  <div className="text-xs font-bold uppercase tracking-wider">Baking & Brewing</div>
+                  <div className="text-[10px] text-[#E84A74]">~{minutes}m {seconds}s remaining</div>
                 </div>
               </div>
             ) : (
-              <div className="bg-[#24201D] border border-[#3E352F] text-[#C9C1B5] px-4 py-2 rounded-2xl flex items-center gap-2">
-                <Clock className="w-5 h-5 text-[#C88A58]" />
+              <div className="bg-[#FFF9F9] border border-[#F8D7DF] text-[#5D4A4A] px-4 py-2 rounded-2xl flex items-center gap-2">
+                <Clock className="w-5 h-5 text-[#E84A74]" />
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-wider">Ticket In Queue</div>
-                  <div className="text-[10px] text-[#A89F91]">Scheduled for {order.pickupTime}</div>
+                  <div className="text-xs font-bold uppercase tracking-wider">In Kitchen Queue</div>
+                  <div className="text-[10px] text-[#8C7575]">Scheduled for {order.pickupTime}</div>
                 </div>
               </div>
             )}
@@ -169,12 +164,11 @@ export const OrderTracker: React.FC = () => {
         </div>
 
         {/* Progress Stepper */}
-        <div className="py-6">
+        <div className="py-8">
           <div className="grid grid-cols-4 gap-2 relative">
-            {/* Connecting Bar */}
-            <div className="absolute top-5 left-8 right-8 h-1 bg-[#2E2824] -z-0">
+            <div className="absolute top-5 left-8 right-8 h-1 bg-[#F8D7DF] -z-0">
               <div
-                className="h-full bg-gradient-to-r from-[#C88A58] to-emerald-400 transition-all duration-700"
+                className="h-full bg-[#E84A74] transition-all duration-700"
                 style={{
                   width: `${(currentIndex / (stages.length - 1)) * 100}%`,
                 }}
@@ -185,17 +179,16 @@ export const OrderTracker: React.FC = () => {
               const Icon = stage.icon;
               const isPast = idx < currentIndex;
               const isCurrent = idx === currentIndex;
-              const isFuture = idx > currentIndex;
 
               return (
                 <div key={stage.key} className="flex flex-col items-center text-center relative z-10">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
                       isCurrent
-                        ? 'bg-[#C88A58] border-white text-[#14110F] ring-4 ring-[#C88A58]/20 scale-110'
+                        ? 'bg-[#E84A74] border-white text-white ring-4 ring-[#E84A74]/20 scale-110 shadow-md'
                         : isPast
-                        ? 'bg-emerald-600 border-emerald-400 text-white'
-                        : 'bg-[#1C1917] border-[#3E352F] text-[#6E645C]'
+                        ? 'bg-[#E84A74] border-[#E84A74] text-white'
+                        : 'bg-white border-[#F8D7DF] text-[#A88C8C]'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -203,12 +196,12 @@ export const OrderTracker: React.FC = () => {
                   <div className="mt-2.5">
                     <p
                       className={`text-xs font-bold ${
-                        isCurrent ? 'text-[#C88A58]' : isPast ? 'text-emerald-400' : 'text-[#6E645C]'
+                        isCurrent || isPast ? 'text-[#E84A74]' : 'text-[#8C7575]'
                       }`}
                     >
                       {stage.title}
                     </p>
-                    <p className="text-[10px] text-[#A89F91] hidden sm:block mt-0.5 max-w-[120px]">
+                    <p className="text-[10px] text-[#8C7575] hidden sm:block mt-0.5 max-w-[120px]">
                       {stage.description}
                     </p>
                   </div>
@@ -218,23 +211,23 @@ export const OrderTracker: React.FC = () => {
           </div>
         </div>
 
-        {/* Barcode / QR Pickup Proof */}
-        <div className="mt-4 p-4 bg-[#14110F] border border-[#2E2824] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Pickup Pass QR */}
+        <div className="mt-2 p-4 bg-[#FFF9F9] border border-[#F8D7DF] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white rounded-xl">
-              <QrCode className="w-12 h-12 text-black" />
+            <div className="p-2 bg-white rounded-xl border border-[#F8D7DF]">
+              <QrCode className="w-12 h-12 text-[#2D2020]" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-[#FDFBF7]">Digital Pickup Pass</p>
-              <p className="text-[11px] text-[#A89F91]">
-                Show QR code or mention <b className="text-[#C88A58]">{order.orderNumber}</b> at the barista counter.
+              <p className="text-xs font-bold text-[#2D2020]">Sweet Pass QR</p>
+              <p className="text-[11px] text-[#7A6767]">
+                Show QR or mention <b className="text-[#E84A74]">{order.orderNumber}</b> at the counter.
               </p>
             </div>
           </div>
 
           <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wider text-[#A89F91]">Payment Status</p>
-            <p className="text-xs font-bold text-emerald-400 capitalize">
+            <p className="text-[10px] uppercase tracking-wider text-[#8C7575]">Payment</p>
+            <p className="text-xs font-bold text-emerald-600 capitalize">
               ✓ {order.paymentMethod.replace('-', ' ')} • Paid
             </p>
           </div>
@@ -242,70 +235,61 @@ export const OrderTracker: React.FC = () => {
 
       </div>
 
-      {/* Ordered Items Summary */}
-      <div className="bg-[#1C1917] border border-[#2E2824] rounded-3xl p-6 shadow-xl space-y-4">
-        <h3 className="font-serif font-bold text-lg text-[#FDFBF7]">Order Items ({order.items.length})</h3>
+      {/* Items Summary */}
+      <div className="bg-white border border-[#F8D7DF] rounded-3xl p-6 shadow-sm space-y-4">
+        <h3 className="font-serif font-bold text-lg text-[#2D2020]">Ordered Items ({order.items.length})</h3>
 
-        <div className="divide-y divide-[#2E2824]">
+        <div className="divide-y divide-[#F8D7DF]">
           {order.items.map((item, idx) => (
             <div key={idx} className="py-3 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <img
                   src={item.menuItem.image}
                   alt={item.menuItem.name}
-                  className="w-12 h-12 rounded-xl object-cover"
+                  className="w-12 h-12 rounded-xl object-cover border border-[#F8D7DF]"
                 />
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-[#FDFBF7]">{item.quantity}x {item.menuItem.name}</span>
-                  </div>
-                  <div className="text-[10px] text-[#A89F91] flex flex-wrap gap-1.5 mt-0.5">
-                    <span className="capitalize">{item.customization.temp}</span>
-                    {item.customization.milk !== 'none' && <span>• {item.customization.milk} milk</span>}
-                    {item.customization.shots && <span>• {item.customization.shots}</span>}
-                    {item.customization.syrup !== 'none' && <span>• {item.customization.syrup}</span>}
-                    {item.customization.notes && <span className="text-[#C88A58]">• Note: {item.customization.notes}</span>}
+                  <span className="font-bold text-xs text-[#2D2020]">{item.quantity}x {item.menuItem.name}</span>
+                  <div className="text-[10px] text-[#8C7575] flex flex-wrap gap-1.5 mt-0.5">
+                    {item.customization.notes && <span className="text-[#E84A74]">• Note: {item.customization.notes}</span>}
                   </div>
                 </div>
               </div>
-              <span className="font-serif font-bold text-xs text-[#C88A58]">
+              <span className="font-bold text-xs text-[#E84A74]">
                 ${item.itemTotal.toFixed(2)}
               </span>
             </div>
           ))}
         </div>
 
-        <div className="pt-3 border-t border-[#2E2824] flex justify-between items-center text-xs">
-          <span className="text-[#A89F91]">Total Amount Paid:</span>
-          <span className="font-serif font-bold text-base text-[#C88A58]">${order.total.toFixed(2)}</span>
+        <div className="pt-3 border-t border-[#F8D7DF] flex justify-between items-center text-xs">
+          <span className="text-[#8C7575]">Total Paid:</span>
+          <span className="font-serif font-bold text-base text-[#E84A74]">${order.total.toFixed(2)}</span>
         </div>
       </div>
 
-      {/* Interactive Simulation Sandbox (Demonstrating Cross-Device KDS Sync) */}
-      <div className="p-4 bg-[#24201D] border border-[#3E352F] rounded-2xl space-y-2">
+      {/* Simulator */}
+      <div className="p-4 bg-[#FFF0F3] border border-[#F8D7DF] rounded-2xl space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-[#C88A58] flex items-center gap-1.5">
+          <span className="text-xs font-bold text-[#E84A74] flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" />
-            Interactive Simulation Controls (Test Real-time Sync)
+            Kitchen Simulation Controls (Test Real-Time Sync)
           </span>
           <Link
             href="/kds"
             target="_blank"
-            className="text-[11px] text-[#C88A58] hover:underline flex items-center gap-1"
+            className="text-[11px] text-[#E84A74] font-bold hover:underline"
           >
-            <span>Open Barista KDS Screen &rarr;</span>
+            Open Kitchen KDS &rarr;
           </Link>
         </div>
-        <p className="text-[11px] text-[#A89F91]">
-          Advance the status below to simulate the barista working behind the bar. Notice how this screen updates instantly via BroadcastChannel!
-        </p>
         <div className="flex flex-wrap gap-2 pt-1">
           <button
             onClick={() => updateOrderStatus(order.id, 'received')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
               order.status === 'received'
-                ? 'bg-[#965B32] text-white border-[#C88A58]'
-                : 'bg-[#1C1917] border-[#3E352F] text-[#A89F91]'
+                ? 'bg-[#E84A74] text-white border-[#E84A74]'
+                : 'bg-white border-[#F8D7DF] text-[#5D4A4A]'
             }`}
           >
             1. Queue Received
@@ -314,11 +298,11 @@ export const OrderTracker: React.FC = () => {
             onClick={() => updateOrderStatus(order.id, 'brewing')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
               order.status === 'brewing'
-                ? 'bg-amber-600 text-white border-amber-400'
-                : 'bg-[#1C1917] border-[#3E352F] text-[#A89F91]'
+                ? 'bg-[#E84A74] text-white border-[#E84A74]'
+                : 'bg-white border-[#F8D7DF] text-[#5D4A4A]'
             }`}
           >
-            2. Start Brewing
+            2. Start Baking & Brewing
           </button>
           <button
             onClick={() => {
@@ -327,18 +311,18 @@ export const OrderTracker: React.FC = () => {
             }}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
               order.status === 'ready'
-                ? 'bg-emerald-600 text-white border-emerald-400'
-                : 'bg-[#1C1917] border-[#3E352F] text-[#A89F91]'
+                ? 'bg-emerald-600 text-white border-emerald-600'
+                : 'bg-white border-[#F8D7DF] text-[#5D4A4A]'
             }`}
           >
-            3. Mark Ready for Handoff
+            3. Mark Ready at Counter
           </button>
           <button
             onClick={() => updateOrderStatus(order.id, 'collected')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
               order.status === 'collected'
-                ? 'bg-blue-600 text-white border-blue-400'
-                : 'bg-[#1C1917] border-[#3E352F] text-[#A89F91]'
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-white border-[#F8D7DF] text-[#5D4A4A]'
             }`}
           >
             4. Customer Collected

@@ -12,11 +12,8 @@ import {
   VolumeX,
   Plus,
   RefreshCw,
-  Coffee,
-  AlertTriangle,
-  Layers,
-  ChevronRight,
-  Sparkles
+  Cake,
+  AlertTriangle
 } from 'lucide-react';
 import { playSoundEffect } from '../../utils/sound';
 import { MENU_ITEMS } from '../../data/coffeeData';
@@ -24,17 +21,15 @@ import { MENU_ITEMS } from '../../data/coffeeData';
 export const KdsView: React.FC = () => {
   const { orders, updateOrderStatus, createOrder, resetToSampleOrders } = useOrder();
 
-  const [stationFilter, setStationFilter] = useState<'all' | 'espresso' | 'cold-brew' | 'pour-over' | 'pastries'>('all');
+  const [stationFilter, setStationFilter] = useState<'all' | 'pastries' | 'signature-lattes' | 'espresso' | 'cold-brew'>('all');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [now, setNow] = useState(Date.now());
 
-  // Update live clock every 5 seconds to calculate elapsed queue time
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 5000);
     return () => clearInterval(timer);
   }, []);
 
-  // Filter active tickets (exclude already collected/cancelled)
   const activeTickets = orders.filter((o) => o.status !== 'collected' && o.status !== 'cancelled');
 
   const filteredTickets = activeTickets.filter((order) => {
@@ -60,8 +55,8 @@ export const KdsView: React.FC = () => {
   };
 
   const handleAddRushOrder = async () => {
-    const randomDrink = MENU_ITEMS[Math.floor(Math.random() * MENU_ITEMS.length)];
-    const names = ['Sophia Chang', 'Liam O\'Connor', 'Zoe Kravitz', 'Aarav Patel', 'Mia Rossi'];
+    const randomItem = MENU_ITEMS[Math.floor(Math.random() * MENU_ITEMS.length)];
+    const names = ['Emily Johnson', 'Michael Smith', 'Sophia Brown', 'Lucas Vance', 'Olivia Taylor'];
     const chosenName = names[Math.floor(Math.random() * names.length)];
 
     await createOrder({
@@ -69,7 +64,7 @@ export const KdsView: React.FC = () => {
       customerPhone: '+1 (555) 998-1122',
       pickupTime: 'ASAP',
       paymentMethod: 'apple-pay',
-      tip: 2.00,
+      tip: 3.00,
     });
 
     if (soundEnabled) {
@@ -78,115 +73,111 @@ export const KdsView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0D0C] text-[#FDFBF7] p-4 sm:p-6 flex flex-col space-y-6">
+    <div className="min-h-screen bg-[#FFF9F9] text-[#2D2020] p-4 sm:p-6 flex flex-col space-y-6">
       
-      {/* Top KDS Header Bar */}
-      <div className="bg-[#181513] border border-[#2E2824] rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+      {/* Top Header */}
+      <div className="bg-white border border-[#F8D7DF] rounded-3xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-500/50 flex items-center justify-center">
-            <Radio className="w-6 h-6 text-amber-400 animate-pulse" />
+          <div className="w-11 h-11 rounded-2xl bg-[#FFF0F3] border border-[#F8D7DF] flex items-center justify-center text-[#E84A74]">
+            <Radio className="w-6 h-6 animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-serif font-black text-xl tracking-wide text-[#FDFBF7]">
-                BARISTA KITCHEN DISPLAY (KDS)
+              <h1 className="font-serif font-black text-xl tracking-wide text-[#2D2020]">
+                SWEETCRUMBS KITCHEN DISPLAY (KDS)
               </h1>
-              <span className="bg-emerald-950 text-emerald-400 border border-emerald-500/40 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                LIVE SYNC
+              <span className="bg-[#EAFBF0] text-emerald-700 border border-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                LIVE
               </span>
             </div>
-            <p className="text-xs text-[#A89F91]">
-              Real-time ticket dispatcher & production queue
+            <p className="text-xs text-[#8C7575]">
+              Real-time cake preparation & barista espresso order queue
             </p>
           </div>
         </div>
 
-        {/* Action Controls & Sound Toggle */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        {/* Controls */}
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
             className={`p-2.5 rounded-xl border flex items-center gap-1.5 text-xs font-semibold transition-all ${
               soundEnabled
-                ? 'bg-[#2A2421] border-[#C88A58] text-[#C88A58]'
-                : 'bg-[#181513] border-[#2E2824] text-[#6E645C]'
+                ? 'bg-[#FFF0F3] border-[#E84A74] text-[#E84A74]'
+                : 'bg-white border-[#F8D7DF] text-[#8C7575]'
             }`}
-            title="Toggle Bell Chimes"
           >
-            {soundEnabled ? <Volume2 className="w-4 h-4 text-[#C88A58]" /> : <VolumeX className="w-4 h-4" />}
+            {soundEnabled ? <Volume2 className="w-4 h-4 text-[#E84A74]" /> : <VolumeX className="w-4 h-4" />}
             <span className="hidden sm:inline">{soundEnabled ? 'Chime ON' : 'Muted'}</span>
           </button>
 
           <button
             onClick={handleAddRushOrder}
-            className="bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs py-2.5 px-3.5 rounded-xl flex items-center gap-1.5 transition-all shadow-md shadow-amber-600/20 hover:scale-105"
+            className="bg-[#E84A74] hover:bg-[#D43862] text-white font-bold text-xs py-2.5 px-3.5 rounded-xl flex items-center gap-1.5 shadow-sm transition-all hover:scale-105"
           >
             <Plus className="w-4 h-4" />
-            <span>Simulate Rush Order</span>
+            <span>Simulate Rush Ticket</span>
           </button>
 
           <button
             onClick={resetToSampleOrders}
-            className="p-2.5 rounded-xl bg-[#2A2421] border border-[#2E2824] hover:border-[#3E352F] text-xs text-[#A89F91] hover:text-[#FDFBF7] flex items-center gap-1"
-            title="Reset to Sample Orders"
+            className="p-2.5 rounded-xl bg-white border border-[#F8D7DF] text-xs text-[#8C7575] hover:text-[#2D2020]"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span className="hidden lg:inline">Reset</span>
           </button>
         </div>
       </div>
 
-      {/* Metrics & Station Filter Tabs */}
+      {/* Metrics & Station Tabs */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
         
-        {/* Real-time Counts */}
+        {/* Metric Cards */}
         <div className="grid grid-cols-3 gap-3 flex-1">
-          <div className="bg-[#181513] border border-[#2E2824] rounded-2xl p-3.5 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#2A2421] flex items-center justify-center text-[#C9C1B5]">
-              <Clock className="w-5 h-5 text-[#C88A58]" />
+          <div className="bg-white border border-[#F8D7DF] rounded-2xl p-3.5 flex items-center gap-3 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-[#FFF0F3] flex items-center justify-center text-[#E84A74]">
+              <Clock className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-2xl font-serif font-bold text-[#FDFBF7]">{receivedCount}</div>
-              <div className="text-[11px] text-[#A89F91] uppercase tracking-wider font-semibold">In Queue</div>
+              <div className="text-2xl font-serif font-bold text-[#2D2020]">{receivedCount}</div>
+              <div className="text-[10px] text-[#8C7575] uppercase tracking-wider font-bold">In Queue</div>
             </div>
           </div>
 
-          <div className="bg-[#181513] border border-amber-500/30 rounded-2xl p-3.5 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-950/60 flex items-center justify-center text-amber-400">
-              <Flame className="w-5 h-5 animate-pulse" />
+          <div className="bg-white border border-[#F8D7DF] rounded-2xl p-3.5 flex items-center gap-3 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-[#FFF0F3] flex items-center justify-center text-[#E84A74]">
+              <Flame className="w-5 h-5 animate-bounce" />
             </div>
             <div>
-              <div className="text-2xl font-serif font-bold text-amber-400">{brewingCount}</div>
-              <div className="text-[11px] text-[#A89F91] uppercase tracking-wider font-semibold">Brewing</div>
+              <div className="text-2xl font-serif font-bold text-[#E84A74]">{brewingCount}</div>
+              <div className="text-[10px] text-[#8C7575] uppercase tracking-wider font-bold">Baking & Brewing</div>
             </div>
           </div>
 
-          <div className="bg-[#181513] border border-emerald-500/30 rounded-2xl p-3.5 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-950/60 flex items-center justify-center text-emerald-400">
+          <div className="bg-white border border-[#F8D7DF] rounded-2xl p-3.5 flex items-center gap-3 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-[#EAFBF0] flex items-center justify-center text-emerald-600">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-2xl font-serif font-bold text-emerald-400">{readyCount}</div>
-              <div className="text-[11px] text-[#A89F91] uppercase tracking-wider font-semibold">Ready for Pickup</div>
+              <div className="text-2xl font-serif font-bold text-emerald-700">{readyCount}</div>
+              <div className="text-[10px] text-[#8C7575] uppercase tracking-wider font-bold">Ready on Bar</div>
             </div>
           </div>
         </div>
 
-        {/* Station Filter Buttons */}
-        <div className="flex items-center gap-1.5 overflow-x-auto bg-[#181513] p-1.5 rounded-2xl border border-[#2E2824]">
+        {/* Stations */}
+        <div className="flex items-center gap-1.5 overflow-x-auto bg-white p-1.5 rounded-2xl border border-[#F8D7DF] shadow-xs">
           {[
             { id: 'all', label: 'All Stations' },
+            { id: 'pastries', label: 'Cake Bakery' },
+            { id: 'signature-lattes', label: 'Latte Station' },
             { id: 'espresso', label: 'Espresso Bar' },
-            { id: 'cold-brew', label: 'Cold Bar' },
-            { id: 'pour-over', label: 'Pour Over' },
-            { id: 'pastries', label: 'Pastry / Warm' },
           ].map((station) => (
             <button
               key={station.id}
               onClick={() => setStationFilter(station.id as any)}
               className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 stationFilter === station.id
-                  ? 'bg-[#965B32] text-white shadow-sm'
-                  : 'text-[#A89F91] hover:text-[#FDFBF7] hover:bg-[#24201D]'
+                  ? 'bg-[#E84A74] text-white shadow-xs'
+                  : 'text-[#8C7575] hover:text-[#2D2020] hover:bg-[#FFF0F3]'
               }`}
             >
               {station.label}
@@ -196,166 +187,112 @@ export const KdsView: React.FC = () => {
 
       </div>
 
-      {/* Ticket Grid (Tablet & Screen Optimized) */}
+      {/* Ticket Grid */}
       <div className="flex-1">
         {filteredTickets.length === 0 ? (
-          <div className="h-96 bg-[#181513] border border-[#2E2824] rounded-3xl flex flex-col items-center justify-center text-center p-8 space-y-3">
-            <div className="w-16 h-16 rounded-2xl bg-[#24201D] flex items-center justify-center text-[#6E645C]">
-              <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+          <div className="h-96 bg-white border border-[#F8D7DF] rounded-3xl flex flex-col items-center justify-center text-center p-8 space-y-3 shadow-xs">
+            <div className="w-16 h-16 rounded-2xl bg-[#FFF0F3] flex items-center justify-center text-[#E84A74]">
+              <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h3 className="font-serif font-bold text-xl text-[#FDFBF7]">All Caught Up, Barista!</h3>
-            <p className="text-xs text-[#A89F91] max-w-sm">
-              Zero pending tickets for this station. Click "Simulate Rush Order" to test incoming orders.
+            <h3 className="font-serif font-bold text-xl text-[#2D2020]">All Caught Up!</h3>
+            <p className="text-xs text-[#8C7575] max-w-sm">
+              No pending orders for this station. Click "Simulate Rush Ticket" to generate orders.
             </p>
-            <button
-              onClick={handleAddRushOrder}
-              className="bg-[#965B32] hover:bg-[#C88A58] text-white text-xs font-bold py-2.5 px-5 rounded-xl transition-all"
-            >
-              + Create Simulated Ticket
-            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
             {filteredTickets.map((order) => {
               const elapsedMinutes = Math.floor((now - order.createdAt) / 60000);
               const isUrgent = elapsedMinutes >= 7;
-              const isWarning = elapsedMinutes >= 4 && elapsedMinutes < 7;
 
-              let cardBorder = 'border-[#2E2824]';
-              let timeBadge = 'bg-[#2A2421] text-[#A89F91]';
+              let cardBorder = 'border-[#F8D7DF] bg-white';
+              let badgeStyle = 'bg-[#FFF0F3] text-[#E84A74]';
 
               if (order.status === 'ready') {
-                cardBorder = 'border-emerald-500/40 bg-[#121E17]';
-                timeBadge = 'bg-emerald-950 text-emerald-300 border border-emerald-500/40';
+                cardBorder = 'border-emerald-400 bg-[#FAFFFB]';
+                badgeStyle = 'bg-emerald-100 text-emerald-800';
               } else if (isUrgent) {
-                cardBorder = 'border-red-500/50 bg-[#211414] animate-pulse';
-                timeBadge = 'bg-red-950 text-red-300 border border-red-500';
-              } else if (isWarning) {
-                cardBorder = 'border-amber-500/40 bg-[#1E1914]';
-                timeBadge = 'bg-amber-950 text-amber-300 border border-amber-500/40';
-              } else {
-                cardBorder = 'border-[#2E2824] bg-[#181513]';
+                cardBorder = 'border-red-400 bg-[#FFF5F5]';
+                badgeStyle = 'bg-red-100 text-red-700';
               }
 
               return (
                 <div
                   key={order.id}
-                  className={`rounded-2xl border ${cardBorder} p-4 flex flex-col justify-between shadow-lg transition-all duration-200`}
+                  className={`rounded-2xl border ${cardBorder} p-4 flex flex-col justify-between shadow-xs transition-all`}
                 >
-                  {/* Ticket Header */}
                   <div>
-                    <div className="flex items-center justify-between pb-3 border-b border-[#2E2824]/60">
+                    <div className="flex items-center justify-between pb-3 border-b border-[#F8D7DF]">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-black text-lg text-[#C88A58]">
+                        <span className="font-mono font-black text-lg text-[#E84A74]">
                           {order.orderNumber}
                         </span>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${timeBadge}`}>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${badgeStyle}`}>
                           <Clock className="w-3 h-3" />
                           {elapsedMinutes}m ago
                         </span>
                       </div>
 
-                      {order.status === 'ready' ? (
-                        <span className="bg-emerald-500 text-black text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
-                          READY
-                        </span>
-                      ) : order.status === 'brewing' ? (
-                        <span className="bg-amber-500 text-black text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md flex items-center gap-1">
-                          <Flame className="w-3 h-3 animate-bounce" />
-                          BREWING
-                        </span>
-                      ) : (
-                        <span className="bg-[#2A2421] text-[#A89F91] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md">
-                          QUEUED
-                        </span>
-                      )}
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#FFF0F3] text-[#E84A74]">
+                        {order.status}
+                      </span>
                     </div>
 
-                    {/* Customer Name & Pickup Time */}
                     <div className="pt-2 pb-3">
-                      <h4 className="font-bold text-sm text-[#FDFBF7] truncate">
+                      <h4 className="font-bold text-sm text-[#2D2020] truncate">
                         {order.customerName}
                       </h4>
-                      <div className="flex items-center justify-between text-[11px] text-[#A89F91] mt-0.5">
-                        <span>Target: <b className="text-[#C88A58]">{order.pickupTime}</b></span>
-                        <span className="capitalize text-emerald-400 font-medium">✓ {order.paymentMethod}</span>
+                      <div className="text-[11px] text-[#8C7575] mt-0.5">
+                        Target: <b className="text-[#E84A74]">{order.pickupTime}</b>
                       </div>
                     </div>
 
-                    {/* Drink & Food Item Lines */}
-                    <div className="space-y-2.5 py-2 border-t border-[#2E2824]/60">
+                    <div className="space-y-2 py-2 border-t border-[#F8D7DF]">
                       {order.items.map((item, itemIdx) => (
-                        <div key={itemIdx} className="bg-[#211C19] p-2.5 rounded-xl border border-[#2E2824]">
-                          <div className="flex justify-between items-start">
-                            <span className="font-bold text-xs text-[#FDFBF7]">
-                              {item.quantity}x {item.menuItem.name}
-                            </span>
-                          </div>
-
-                          {/* Customization Details */}
-                          <div className="mt-1 flex flex-wrap gap-1 text-[10px]">
-                            <span className="bg-[#2E2824] px-1.5 py-0.5 rounded text-amber-300 font-semibold capitalize">
-                              {item.customization.temp}
-                            </span>
-                            {item.customization.milk !== 'none' && (
-                              <span className="bg-[#2E2824] px-1.5 py-0.5 rounded text-[#FDFBF7] font-semibold capitalize">
-                                {item.customization.milk} milk
-                              </span>
-                            )}
-                            {item.customization.shots && (
-                              <span className="bg-[#2E2824] px-1.5 py-0.5 rounded text-[#C9C1B5]">
-                                {item.customization.shots}
-                              </span>
-                            )}
-                            {item.customization.syrup !== 'none' && (
-                              <span className="bg-[#2E2824] px-1.5 py-0.5 rounded text-[#C88A58] font-bold">
-                                {item.customization.syrup} ({item.customization.syrupPumps} pumps)
-                              </span>
-                            )}
-                            {item.customization.notes && (
-                              <div className="w-full mt-1 bg-amber-950/60 border border-amber-500/40 text-amber-200 text-[10px] p-1.5 rounded font-medium flex items-center gap-1">
-                                <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0" />
-                                <span>Note: {item.customization.notes}</span>
-                              </div>
-                            )}
-                          </div>
+                        <div key={itemIdx} className="bg-[#FFF9F9] p-2.5 rounded-xl border border-[#F8D7DF]">
+                          <span className="font-bold text-xs text-[#2D2020]">
+                            {item.quantity}x {item.menuItem.name}
+                          </span>
+                          {item.customization.notes && (
+                            <div className="mt-1 text-[10px] text-[#E84A74] font-medium">
+                              Note: {item.customization.notes}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Advance Status Button */}
-                  <div className="pt-3 border-t border-[#2E2824]/60 mt-2">
+                  <div className="pt-3 border-t border-[#F8D7DF] mt-2">
                     {order.status === 'received' && (
                       <button
                         onClick={() => handleAdvanceStatus(order)}
-                        className="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs py-3 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.02]"
+                        className="w-full bg-[#E84A74] hover:bg-[#D43862] text-white font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <Flame className="w-4 h-4" />
-                        <span>Start Brewing Ticket</span>
+                        <span>Start Preparing</span>
                       </button>
                     )}
 
                     {order.status === 'brewing' && (
                       <button
                         onClick={() => handleAdvanceStatus(order)}
-                        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-3 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.02]"
+                        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <CheckCircle2 className="w-4 h-4" />
-                        <span>Mark Ready on Bar Counter</span>
+                        <span>Mark Ready on Bar</span>
                       </button>
                     )}
 
                     {order.status === 'ready' && (
                       <button
                         onClick={() => handleAdvanceStatus(order)}
-                        className="w-full bg-[#2A2421] hover:bg-[#3E352F] text-[#C9C1B5] hover:text-white font-bold text-xs py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
+                        className="w-full bg-white hover:bg-[#FFF0F3] border border-[#F8D7DF] text-[#5D4A4A] font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5"
                       >
-                        <span>Customer Collected (Archive)</span>
+                        <span>Customer Collected</span>
                       </button>
                     )}
                   </div>
-
                 </div>
               );
             })}

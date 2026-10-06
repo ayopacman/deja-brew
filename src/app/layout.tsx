@@ -20,15 +20,15 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#14110F" />
+        <meta name="theme-color" content="#FFF0F3" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-        <title>Click & Sip • Artisan Specialty Coffee PWA & Barista KDS</title>
+        <title>SweetCrumbs • Cakes, Bakery & Artisan Coffee Order Ahead PWA</title>
       </head>
-      <body className="bg-[#14110F] text-[#FDFBF7] antialiased min-h-screen flex flex-col font-sans selection:bg-[#C88A58] selection:text-[#14110F]">
+      <body className="bg-[#FFF9F9] text-[#2D2020] antialiased min-h-screen flex flex-col font-sans selection:bg-[#E84A74] selection:text-white">
         <OrderProvider>
           <Navbar onOpenSommelier={() => setIsSommelierOpen(true)} />
           
-          <main className="flex-1 pb-20 md:pb-10">
+          <main className="flex-1 pb-20 lg:pb-0">
             {children}
           </main>
 

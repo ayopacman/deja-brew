@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Sparkles, Send, Bot, User, ArrowRight, RefreshCw, Coffee, Flame } from 'lucide-react';
-import { COFFEE_KNOWLEDGE_BASE, MENU_ITEMS } from '../../data/coffeeData';
+import { X, Sparkles, Send, Bot, User, ArrowRight, Cake, Heart } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -27,7 +26,7 @@ export const CoffeeSommelierModal: React.FC<CoffeeSommelierModalProps> = ({
     {
       id: 'm-1',
       sender: 'ai',
-      text: "Hello! I am your AI Coffee Sommelier. Whether you're troubleshooting a sour espresso shot, searching for a rare single-origin roast, or dialing in your V60 water ratio, ask me anything!",
+      text: "Hello! I am your SweetCrumbs AI Cake & Coffee Sommelier. Ask me for cake pairing recommendations, flavor notes, allergy-safe options, or brewing tips!",
     },
   ]);
   const [input, setInput] = useState('');
@@ -41,10 +40,10 @@ export const CoffeeSommelierModal: React.FC<CoffeeSommelierModalProps> = ({
   if (!isOpen) return null;
 
   const quickPrompts = [
-    'Why does my espresso taste sour / salty?',
-    'Recommend a floral, tea-like single origin',
-    'Best water temperature and ratio for V60?',
-    'How do I steam oat milk for silky latte art?',
+    'What coffee pairs best with Chocolate Bliss Cake?',
+    'Recommend a light fruit cake for a birthday',
+    'How do I steam oat milk for rose lattes?',
+    'Suggest a pairing for Fresh Strawberry Cake',
   ];
 
   const handleSend = (textToSend?: string) => {
@@ -61,28 +60,24 @@ export const CoffeeSommelierModal: React.FC<CoffeeSommelierModalProps> = ({
     if (!textToSend) setInput('');
     setIsTyping(true);
 
-    // AI answer synthesis based on query
     setTimeout(() => {
       let reply = '';
       let recommendation: { title: string; actionHref?: string } | undefined = undefined;
 
       const lower = query.toLowerCase();
 
-      if (lower.includes('sour') || lower.includes('bitter') || lower.includes('under-extracted') || lower.includes('extraction')) {
-        reply = "Sourness indicates **under-extraction** (too much acid extracted before sweet lipids and sugars have time to dissolve).\n\n**To fix it:**\n1. **Grind Finer**: Slows flow rate and increases surface area.\n2. **Increase Brew Temp**: Boost water to 93°C–96°C to extract deeper caramelized notes.\n3. **Lengthen Yield Ratio**: If pulling 18g in, try extracting 38g–40g out instead of 32g.";
-        recommendation = { title: 'Dial in with V60 Calculator', actionHref: '/brew-guides' };
-      } else if (lower.includes('floral') || lower.includes('fruity') || lower.includes('ethiopia') || lower.includes('light')) {
-        reply = "For an explosive floral & tea-like profile, I highly recommend our **Ethiopia Guji Highland Heirloom** or our **Panama Boquete Geisha**.\n\nExpect high sweetness with notes of jasmine flowers, ripe peach blossom, and sparkling Meyer lemon acidity.";
-        recommendation = { title: 'View Ethiopia Guji Micro-lot', actionHref: '/order' };
-      } else if (lower.includes('oat') || lower.includes('milk') || lower.includes('steam') || lower.includes('latte art')) {
-        reply = "Oat milk has less natural fat than dairy, making it sensitive to heat denaturation.\n\n**Barista Pro-Tips:**\n1. Use barista-formulated oat milk (like *Minor Figures* or *Oatly Barista*).\n2. Aerate with gentle paper-tearing sounds only until lukewarm (35°C).\n3. Stop steaming at **60°C maximum**; going beyond 65°C causes proteins to break down and foam to separate.";
-        recommendation = { title: 'Order Wild Lavender Oat Latte', actionHref: '/order' };
-      } else if (lower.includes('ratio') || lower.includes('water') || lower.includes('v60') || lower.includes('recipe')) {
-        reply = "For Hario V60 pour-overs, the golden balance is **1:16.6** (15g coffee to 250g water).\n\n• **Bloom**: 50g water, 45 seconds.\n• **Main Pours**: Concentric circles up to 150g, then 250g.\n• **Total Target Drawdown**: 3 minutes flat.";
-        recommendation = { title: 'Open Interactive Brew Stopwatch', actionHref: '/brew-guides' };
+      if (lower.includes('chocolate') || lower.includes('bliss')) {
+        reply = "For our rich **Chocolate Bliss Cake**, we recommend pairing with our **Artisan Flat White** or a medium-dark Colombian espresso. The creamy micro-foam and toffee undertones cut through the 70% dark Belgian ganache beautifully!";
+        recommendation = { title: 'Order Chocolate Bliss Cake', actionHref: '/order' };
+      } else if (lower.includes('strawberry') || lower.includes('fruit') || lower.includes('birthday')) {
+        reply = "Our **Fresh Strawberry Fruit Cake** pairs like a dream with our **Rose Petal & Vanilla Latte** or a floral **Panama Geisha Pour Over**! It has light chiffon sponge and Chantilly cream that won't overwhelm your palate.";
+        recommendation = { title: 'View Fresh Strawberry Cake', actionHref: '/order' };
+      } else if (lower.includes('oat') || lower.includes('rose') || lower.includes('latte')) {
+        reply = "For our signature **Rose Petal Latte**, steam oat milk gently to 60°C maximum to preserve natural sweetness and silky micro-foam. Add 2 pumps of organic rose vanilla syrup for the perfect floral aroma!";
+        recommendation = { title: 'Order Rose Petal Latte', actionHref: '/order' };
       } else {
-        reply = `Great question! At Click & Sip, we source directly from micro-lot farms and roast weekly to maintain peak aromatics. To find your ideal cup, check our Single-Origin Explorer tier or customize your morning brew with your choice of roast and plant-based milks.`;
-        recommendation = { title: 'Explore Palate Quiz', actionHref: '/subscription' };
+        reply = "At SweetCrumbs, every cake and pastry is baked fresh daily with natural ingredients, paired with freshly roasted micro-lot coffees. Check out our tasting box or order ahead for zero-wait counter pickup!";
+        recommendation = { title: 'Browse SweetCrumbs Menu', actionHref: '/order' };
       }
 
       const aiMsg: Message = {
@@ -94,68 +89,65 @@ export const CoffeeSommelierModal: React.FC<CoffeeSommelierModalProps> = ({
 
       setMessages((prev) => [...prev, aiMsg]);
       setIsTyping(false);
-    }, 750);
+    }, 600);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-lg h-[620px] bg-[#181513] border border-[#3E352F] rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between text-[#FDFBF7]"
+        className="relative w-full max-w-lg h-[600px] bg-white border border-[#F8D7DF] rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between text-[#2D2020]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 bg-[#14110F] border-b border-[#2E2824] flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#C88A58] to-[#965B32] p-0.5 flex items-center justify-center">
-              <div className="w-full h-full bg-[#181513] rounded-[10px] flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-[#C88A58]" />
-              </div>
+        <div className="p-4 bg-[#FFF0F3] border-b border-[#F8D7DF] flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#E84A74] flex items-center justify-center text-white shadow-xs">
+              <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-serif font-bold text-base text-[#FDFBF7] flex items-center gap-1.5">
-                <span>AI Coffee Sommelier</span>
-                <span className="text-[9px] bg-[#C88A58] text-[#14110F] font-bold px-1.5 rounded">GEMINI</span>
+              <h3 className="font-serif font-bold text-base text-[#2D2020] flex items-center gap-1.5">
+                <span>SweetCrumbs AI Advisor</span>
               </h3>
-              <p className="text-[10px] text-[#A89F91]">Origin notes, ratios & extraction expert</p>
+              <p className="text-[10px] text-[#8C7575]">Cake pairings, recipes & brew advice</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-[#24201D] hover:bg-[#3E352F] flex items-center justify-center text-[#A89F91] hover:text-white"
+            className="w-8 h-8 rounded-full bg-white hover:bg-[#FDE8ED] flex items-center justify-center text-[#5D4A4A] shadow-xs"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Message Stream */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs bg-[#FFF9F9]">
           {messages.map((m) => (
             <div
               key={m.id}
               className={`flex gap-2.5 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {m.sender === 'ai' && (
-                <div className="w-7 h-7 rounded-lg bg-[#2A2421] border border-[#3E352F] flex items-center justify-center text-[#C88A58] shrink-0 mt-0.5">
-                  <Bot className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-lg bg-[#FFF0F3] border border-[#F8D7DF] flex items-center justify-center text-[#E84A74] shrink-0 mt-0.5">
+                  <Cake className="w-4 h-4" />
                 </div>
               )}
 
               <div
-                className={`max-w-[82%] p-3.5 rounded-2xl whitespace-pre-wrap leading-relaxed ${
+                className={`max-w-[82%] p-3.5 rounded-2xl whitespace-pre-wrap leading-relaxed shadow-xs ${
                   m.sender === 'user'
-                    ? 'bg-[#965B32] text-white rounded-tr-none'
-                    : 'bg-[#211C19] border border-[#2E2824] text-[#E8E2D9] rounded-tl-none'
+                    ? 'bg-[#E84A74] text-white rounded-tr-none'
+                    : 'bg-white border border-[#F8D7DF] text-[#2D2020] rounded-tl-none'
                 }`}
               >
                 {m.text}
 
                 {m.recommendation && (
-                  <div className="mt-3 pt-2.5 border-t border-[#3E352F]/60">
+                  <div className="mt-3 pt-2.5 border-t border-[#F8D7DF]">
                     <a
                       href={m.recommendation.actionHref}
                       onClick={onClose}
-                      className="inline-flex items-center gap-1.5 bg-[#2A2421] hover:bg-[#C88A58] text-[#C88A58] hover:text-[#14110F] font-bold text-[11px] px-3 py-1.5 rounded-lg border border-[#3E352F] transition-all"
+                      className="inline-flex items-center gap-1.5 bg-[#FFF0F3] hover:bg-[#FDE8ED] text-[#E84A74] font-bold text-[11px] px-3 py-1.5 rounded-lg border border-[#F8D7DF] transition-all"
                     >
                       <span>{m.recommendation.title}</span>
                       <ArrowRight className="w-3 h-3" />
@@ -165,7 +157,7 @@ export const CoffeeSommelierModal: React.FC<CoffeeSommelierModalProps> = ({
               </div>
 
               {m.sender === 'user' && (
-                <div className="w-7 h-7 rounded-lg bg-[#3E352F] flex items-center justify-center text-white shrink-0 mt-0.5">
+                <div className="w-7 h-7 rounded-lg bg-[#5D4A4A] flex items-center justify-center text-white shrink-0 mt-0.5">
                   <User className="w-4 h-4" />
                 </div>
               )}
@@ -173,47 +165,47 @@ export const CoffeeSommelierModal: React.FC<CoffeeSommelierModalProps> = ({
           ))}
 
           {isTyping && (
-            <div className="flex items-center gap-2 text-xs text-[#A89F91] pl-9">
-              <Sparkles className="w-3.5 h-3.5 text-[#C88A58] animate-spin" />
-              <span>Sommelier analyzing extraction notes...</span>
+            <div className="flex items-center gap-2 text-xs text-[#8C7575] pl-9">
+              <Sparkles className="w-3.5 h-3.5 text-[#E84A74] animate-spin" />
+              <span>SweetCrumbs AI is crafting an answer...</span>
             </div>
           )}
 
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Quick Suggestion Pills */}
-        <div className="px-4 py-2 bg-[#14110F]/80 border-t border-[#2E2824] flex items-center gap-1.5 overflow-x-auto">
+        {/* Prompts */}
+        <div className="px-4 py-2 bg-[#FFF0F3] border-t border-[#F8D7DF] flex items-center gap-1.5 overflow-x-auto">
           {quickPrompts.map((prompt, idx) => (
             <button
               key={idx}
               onClick={() => handleSend(prompt)}
-              className="px-2.5 py-1 bg-[#211C19] hover:bg-[#2E2824] border border-[#2E2824] text-[#A89F91] hover:text-[#FDFBF7] text-[10px] rounded-lg whitespace-nowrap transition-colors shrink-0"
+              className="px-2.5 py-1 bg-white hover:bg-[#FDE8ED] border border-[#F8D7DF] text-[#5D4A4A] text-[10px] rounded-lg whitespace-nowrap transition-colors shrink-0"
             >
               {prompt}
             </button>
           ))}
         </div>
 
-        {/* Input Footer */}
+        {/* Input */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSend();
           }}
-          className="p-3 bg-[#14110F] border-t border-[#2E2824] flex items-center gap-2"
+          className="p-3 bg-white border-t border-[#F8D7DF] flex items-center gap-2"
         >
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about roast notes, sour extraction, grind sizes..."
-            className="flex-1 bg-[#211C19] border border-[#2E2824] text-[#FDFBF7] text-xs rounded-xl p-3 focus:outline-none focus:border-[#C88A58]"
+            placeholder="Ask about cake pairings, flavors, or orders..."
+            className="flex-1 bg-[#FFF9F9] border border-[#F8D7DF] text-[#2D2020] text-xs rounded-xl p-3 focus:outline-none focus:border-[#E84A74]"
           />
           <button
             type="submit"
             disabled={!input.trim() || isTyping}
-            className="w-10 h-10 rounded-xl bg-[#C88A58] hover:bg-[#B07342] text-[#14110F] flex items-center justify-center transition-colors disabled:opacity-40"
+            className="w-10 h-10 rounded-xl bg-[#E84A74] hover:bg-[#D43862] text-white flex items-center justify-center transition-colors disabled:opacity-40 shadow-xs"
           >
             <Send className="w-4 h-4" />
           </button>

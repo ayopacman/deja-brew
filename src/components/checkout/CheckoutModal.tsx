@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useOrder } from '../../context/OrderContext';
-import { X, CreditCard, ShieldCheck, CheckCircle2, Loader2, Sparkles, Smartphone } from 'lucide-react';
+import { X, CreditCard, ShieldCheck, CheckCircle2, Loader2, Sparkles, Smartphone, Heart } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { playSoundEffect } from '../../utils/sound';
 
@@ -21,11 +21,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   tipAmount,
 }) => {
   const router = useRouter();
-  const { createOrder, cartTotal, cartSubtotal, setIsCartOpen } = useOrder();
+  const { createOrder, cartTotal, setIsCartOpen } = useOrder();
 
-  const [name, setName] = useState('Devon Takahashi');
-  const [phone, setPhone] = useState('(555) 342-9901');
-  const [email, setEmail] = useState('devon.coffee@example.com');
+  const [name, setName] = useState('Emily Johnson');
+  const [phone, setPhone] = useState('(555) 234-8899');
+  const [email, setEmail] = useState('emily.j@example.com');
   const [paymentMethod, setPaymentMethod] = useState<'apple-pay' | 'card' | 'google-pay' | 'counter'>('apple-pay');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -43,7 +43,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
     setIsProcessing(true);
 
-    // Simulate payment gateway roundtrip
     setTimeout(async () => {
       try {
         const order = await createOrder({
@@ -59,12 +58,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         setIsSuccess(true);
         playSoundEffect('ready_bell');
 
-        // Confetti celebration
         confetti({
-          particleCount: 100,
-          spread: 70,
+          particleCount: 120,
+          spread: 80,
           origin: { y: 0.6 },
-          colors: ['#C88A58', '#965B32', '#FDFBF7', '#E58C3A']
+          colors: ['#E84A74', '#FF8EA8', '#FDE8ED', '#F59E0B']
         });
 
         setTimeout(() => {
@@ -80,43 +78,43 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-md bg-[#1A1715] border border-[#3E352F] rounded-3xl overflow-hidden shadow-2xl text-[#FDFBF7]"
+        className="relative w-full max-w-md bg-white border border-[#F8D7DF] rounded-3xl overflow-hidden shadow-2xl text-[#2D2020]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 bg-[#14110F] border-b border-[#3E352F] flex items-center justify-between">
+        <div className="p-4 bg-[#FFF0F3] border-b border-[#F8D7DF] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#C88A58]/20 flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5 text-[#C88A58]" />
+            <div className="w-8 h-8 rounded-lg bg-[#E84A74] flex items-center justify-center text-white">
+              <Heart className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-serif font-bold text-base text-[#FDFBF7]">Click & Sip Checkout</h3>
-              <p className="text-[10px] text-[#A89F91]">Encrypted Stripe & Apple Pay</p>
+              <h3 className="font-serif font-bold text-base text-[#2D2020]">SweetCrumbs Checkout</h3>
+              <p className="text-[10px] text-[#8C7575]">Instant Order Ahead & Pickup</p>
             </div>
           </div>
           {!isProcessing && !isSuccess && (
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-lg bg-[#24201D] hover:bg-[#3E352F] flex items-center justify-center text-[#A89F91] hover:text-white"
+              className="w-8 h-8 rounded-full bg-white hover:bg-[#FDE8ED] flex items-center justify-center text-[#5D4A4A] shadow-xs"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        {/* Success Screen */}
+        {/* Success */}
         {isSuccess ? (
           <div className="p-8 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="w-20 h-20 rounded-full bg-emerald-950/80 border-2 border-emerald-500 flex items-center justify-center animate-bounce">
-              <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+            <div className="w-20 h-20 rounded-full bg-[#FDE8ED] border-2 border-[#E84A74] flex items-center justify-center animate-bounce">
+              <CheckCircle2 className="w-10 h-10 text-[#E84A74]" />
             </div>
-            <h3 className="font-serif font-bold text-2xl text-[#FDFBF7]">Order Confirmed!</h3>
-            <p className="text-xs text-[#A89F91] max-w-xs">
-              Your ticket has been beamed directly to the Barista Kitchen Display System.
+            <h3 className="font-serif font-bold text-2xl text-[#2D2020]">Order Placed!</h3>
+            <p className="text-xs text-[#8C7575] max-w-xs">
+              Your sweet treats are being queued right away in our kitchen display!
             </p>
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#C88A58] bg-[#24201D] px-4 py-2 rounded-xl border border-[#3E352F]">
+            <div className="flex items-center gap-2 text-xs font-semibold text-[#E84A74] bg-[#FFF0F3] px-4 py-2 rounded-xl border border-[#F8D7DF]">
               <Loader2 className="w-4 h-4 animate-spin" />
               <span>Redirecting to live tracker...</span>
             </div>
@@ -125,8 +123,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <form onSubmit={handlePay} className="p-5 space-y-4 text-xs">
             
             {/* Customer Details */}
-            <div className="space-y-2.5">
-              <label className="text-[11px] font-semibold text-[#A89F91] uppercase tracking-wider block">
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold text-[#8C7575] uppercase tracking-wider block">
                 Pickup Customer Details
               </label>
 
@@ -137,7 +135,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your Name (called at counter)"
-                  className="w-full bg-[#24201D] border border-[#3E352F] text-[#FDFBF7] rounded-xl p-3 focus:outline-none focus:border-[#C88A58]"
+                  className="w-full bg-[#FFF8F8] border border-[#F8D7DF] text-[#2D2020] rounded-xl p-3 focus:outline-none focus:border-[#E84A74]"
                 />
               </div>
 
@@ -146,23 +144,23 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Mobile (for SMS update)"
-                  className="w-full bg-[#24201D] border border-[#3E352F] text-[#FDFBF7] rounded-xl p-3 focus:outline-none focus:border-[#C88A58]"
+                  placeholder="Mobile for SMS"
+                  className="w-full bg-[#FFF8F8] border border-[#F8D7DF] text-[#2D2020] rounded-xl p-3 focus:outline-none focus:border-[#E84A74]"
                 />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Receipt Email"
-                  className="w-full bg-[#24201D] border border-[#3E352F] text-[#FDFBF7] rounded-xl p-3 focus:outline-none focus:border-[#C88A58]"
+                  className="w-full bg-[#FFF8F8] border border-[#F8D7DF] text-[#2D2020] rounded-xl p-3 focus:outline-none focus:border-[#E84A74]"
                 />
               </div>
             </div>
 
-            {/* Payment Method Selector */}
+            {/* Payment Method */}
             <div className="space-y-2">
-              <label className="text-[11px] font-semibold text-[#A89F91] uppercase tracking-wider block">
-                Payment Method
+              <label className="text-[11px] font-bold text-[#8C7575] uppercase tracking-wider block">
+                Payment Option
               </label>
 
               <div className="grid grid-cols-3 gap-2">
@@ -171,12 +169,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   onClick={() => setPaymentMethod('apple-pay')}
                   className={`p-2.5 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all ${
                     paymentMethod === 'apple-pay'
-                      ? 'bg-black text-white border-white'
-                      : 'bg-[#24201D] border-[#3E352F] text-[#A89F91]'
+                      ? 'bg-[#FDE8ED] border-[#E84A74] text-[#E84A74] font-bold'
+                      : 'bg-[#FFF8F8] border-[#F8D7DF] text-[#8C7575]'
                   }`}
                 >
                   <Smartphone className="w-4 h-4" />
-                  <span className="font-semibold text-[10px]">Apple Pay</span>
+                  <span className="text-[10px]">Apple Pay</span>
                 </button>
 
                 <button
@@ -184,12 +182,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   onClick={() => setPaymentMethod('google-pay')}
                   className={`p-2.5 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all ${
                     paymentMethod === 'google-pay'
-                      ? 'bg-[#1E293B] text-white border-sky-400'
-                      : 'bg-[#24201D] border-[#3E352F] text-[#A89F91]'
+                      ? 'bg-[#FDE8ED] border-[#E84A74] text-[#E84A74] font-bold'
+                      : 'bg-[#FFF8F8] border-[#F8D7DF] text-[#8C7575]'
                   }`}
                 >
-                  <Sparkles className="w-4 h-4 text-sky-400" />
-                  <span className="font-semibold text-[10px]">Google Pay</span>
+                  <Sparkles className="w-4 h-4" />
+                  <span className="text-[10px]">Google Pay</span>
                 </button>
 
                 <button
@@ -197,58 +195,35 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   onClick={() => setPaymentMethod('card')}
                   className={`p-2.5 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all ${
                     paymentMethod === 'card'
-                      ? 'bg-[#965B32]/30 text-white border-[#C88A58]'
-                      : 'bg-[#24201D] border-[#3E352F] text-[#A89F91]'
+                      ? 'bg-[#FDE8ED] border-[#E84A74] text-[#E84A74] font-bold'
+                      : 'bg-[#FFF8F8] border-[#F8D7DF] text-[#8C7575]'
                   }`}
                 >
-                  <CreditCard className="w-4 h-4 text-[#C88A58]" />
-                  <span className="font-semibold text-[10px]">Card (Stripe)</span>
+                  <CreditCard className="w-4 h-4" />
+                  <span className="text-[10px]">Card</span>
                 </button>
               </div>
             </div>
 
-            {/* Simulated Card form if selected */}
-            {paymentMethod === 'card' && (
-              <div className="p-3 bg-[#24201D] border border-[#3E352F] rounded-xl space-y-2">
-                <input
-                  type="text"
-                  defaultValue="4242 •••• •••• 4242"
-                  className="w-full bg-[#1A1715] border border-[#3E352F] text-[#FDFBF7] rounded-lg p-2 text-xs"
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="text"
-                    defaultValue="12/28"
-                    className="w-full bg-[#1A1715] border border-[#3E352F] text-[#FDFBF7] rounded-lg p-2 text-xs"
-                  />
-                  <input
-                    type="text"
-                    defaultValue="CVC 889"
-                    className="w-full bg-[#1A1715] border border-[#3E352F] text-[#FDFBF7] rounded-lg p-2 text-xs"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Total breakdown */}
-            <div className="p-3 bg-[#14110F] rounded-xl border border-[#2E2824] flex justify-between items-center text-xs">
-              <span className="text-[#A89F91]">Total with Tip & Tax:</span>
-              <span className="font-serif font-bold text-base text-[#C88A58]">${total.toFixed(2)}</span>
+            {/* Total */}
+            <div className="p-3 bg-[#FFF0F3] rounded-xl border border-[#F8D7DF] flex justify-between items-center text-xs">
+              <span className="text-[#8C7575] font-medium">Total Amount:</span>
+              <span className="font-serif font-bold text-base text-[#E84A74]">${total.toFixed(2)}</span>
             </div>
 
-            {/* Submit Action */}
+            {/* CTA */}
             <button
               type="submit"
               disabled={isProcessing}
-              className="w-full bg-gradient-to-r from-[#C88A58] to-[#965B32] hover:from-[#DB9C69] hover:to-[#A8693A] text-[#14110F] font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#965B32]/30 transition-all hover:scale-[1.01] disabled:opacity-50"
+              className="w-full bg-[#E84A74] hover:bg-[#D43862] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-[#E84A74]/20 transition-all hover:scale-[1.01] disabled:opacity-50"
             >
               {isProcessing ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Authorizing & Transmitting Ticket...</span>
+                  <span>Processing...</span>
                 </>
               ) : (
-                <span>Authorize & Pay ${total.toFixed(2)}</span>
+                <span>Pay & Place Order (${total.toFixed(2)})</span>
               )}
             </button>
           </form>
