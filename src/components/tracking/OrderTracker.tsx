@@ -12,10 +12,13 @@ import {
   QrCode,
   ArrowRight,
   Flame,
-  ShoppingBag
+  ShoppingBag,
+  Receipt,
+  FileText
 } from 'lucide-react';
 import Link from 'next/link';
 import { playSoundEffect } from '../../utils/sound';
+import { PinkReceiptModal } from '../receipt/PinkReceiptModal';
 
 export const OrderTracker: React.FC = () => {
   const searchParams = useSearchParams();
@@ -28,6 +31,7 @@ export const OrderTracker: React.FC = () => {
     : activeOrder || orders[0];
 
   const [timeLeftSec, setTimeLeftSec] = useState<number>(360);
+  const [isReceiptOpen, setIsReceiptOpen] = useState(false);
 
   useEffect(() => {
     if (!order) return;
@@ -140,7 +144,7 @@ export const OrderTracker: React.FC = () => {
                 <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                 <div>
                   <div className="text-xs font-bold uppercase tracking-wider">Ready on Counter!</div>
-                  <div className="text-[10px] text-emerald-700">Collect at SweetCrumbs handoff</div>
+                  <div className="text-[10px] text-emerald-700">Collect at Deja Brew handoff counter</div>
                 </div>
               </div>
             ) : order.status === 'brewing' ? (
@@ -225,11 +229,24 @@ export const OrderTracker: React.FC = () => {
             </div>
           </div>
 
-          <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wider text-[#8C7575]">Payment</p>
-            <p className="text-xs font-bold text-emerald-600 capitalize">
-              ✓ {order.paymentMethod.replace('-', ' ')} • Paid
-            </p>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <button
+              onClick={() => {
+                setIsReceiptOpen(true);
+                playSoundEffect('click');
+              }}
+              className="bg-[#E84A74] hover:bg-[#D43862] text-white font-bold text-xs py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-md shadow-[#E84A74]/20 transition-all hover:scale-105"
+            >
+              <Receipt className="w-4 h-4" />
+              <span>View Pink Receipt</span>
+            </button>
+
+            <div className="text-right">
+              <p className="text-[10px] uppercase tracking-wider text-[#8C7575]">Payment</p>
+              <p className="text-xs font-bold text-emerald-600 capitalize">
+                ✓ {order.paymentMethod.replace('-', ' ')} • Paid
+              </p>
+            </div>
           </div>
         </div>
 
@@ -237,7 +254,19 @@ export const OrderTracker: React.FC = () => {
 
       {/* Items Summary */}
       <div className="bg-white border border-[#F8D7DF] rounded-3xl p-6 shadow-sm space-y-4">
-        <h3 className="font-serif font-bold text-lg text-[#2D2020]">Ordered Items ({order.items.length})</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-serif font-bold text-lg text-[#2D2020]">Ordered Items ({order.items.length})</h3>
+          <button
+            onClick={() => {
+              setIsReceiptOpen(true);
+              playSoundEffect('click');
+            }}
+            className="text-xs font-bold text-[#E84A74] hover:underline flex items-center gap-1"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Digital Receipt</span>
+          </button>
+        </div>
 
         <div className="divide-y divide-[#F8D7DF]">
           {order.items.map((item, idx) => (
@@ -256,7 +285,7 @@ export const OrderTracker: React.FC = () => {
                 </div>
               </div>
               <span className="font-bold text-xs text-[#E84A74]">
-                ${item.itemTotal.toFixed(2)}
+                ₹{item.itemTotal}
               </span>
             </div>
           ))}
@@ -264,9 +293,18 @@ export const OrderTracker: React.FC = () => {
 
         <div className="pt-3 border-t border-[#F8D7DF] flex justify-between items-center text-xs">
           <span className="text-[#8C7575]">Total Paid:</span>
-          <span className="font-serif font-bold text-base text-[#E84A74]">${order.total.toFixed(2)}</span>
+          <span className="font-serif font-bold text-base text-[#E84A74]">₹{order.total}</span>
         </div>
       </div>
+
+      {/* Pink Aesthetic Receipt Modal */}
+      {isReceiptOpen && (
+        <PinkReceiptModal
+          order={order}
+          isOpen={isReceiptOpen}
+          onClose={() => setIsReceiptOpen(false)}
+        />
+      )}
 
       {/* Simulator */}
       <div className="p-4 bg-[#FFF0F3] border border-[#F8D7DF] rounded-2xl space-y-2">

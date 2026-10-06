@@ -97,10 +97,10 @@ export const SubscriptionConfigurator: React.FC = () => {
       {/* Subscription Customization */}
       <div className="bg-white border border-[#F8D7DF] rounded-3xl p-6 sm:p-8 shadow-xs">
         <h2 className="font-serif font-bold text-2xl text-[#2D2020] mb-2">
-          Join SweetCrumbs Club: <span className="text-[#E84A74]">{selectedPlan.name}</span>
+          Join Deja Brew Club: <span className="text-[#E84A74]">{selectedPlan.name}</span>
         </h2>
         <p className="text-xs text-[#7A6767] mb-6">
-          Fresh deliveries with artisanal packaging. Pause or cancel anytime.
+          Fresh micro-lot deliveries with artisanal packaging. Pause or cancel anytime.
         </p>
 
         {isSubscribed ? (
@@ -109,7 +109,7 @@ export const SubscriptionConfigurator: React.FC = () => {
               <Check className="w-7 h-7" />
             </div>
             <h3 className="font-serif font-bold text-xl text-[#2D2020]">
-              Welcome to SweetCrumbs Tasting Club!
+              Welcome to Deja Brew Tasting Club!
             </h3>
             <p className="text-xs text-[#7A6767] max-w-md mx-auto">
               Your box will be packed fresh and dispatched to <b>{memberEmail}</b>.

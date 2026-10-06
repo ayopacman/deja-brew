@@ -26,7 +26,7 @@ export const CoffeeSommelierModal: React.FC<CoffeeSommelierModalProps> = ({
     {
       id: 'm-1',
       sender: 'ai',
-      text: "Hello! I am your SweetCrumbs AI Cake & Coffee Sommelier. Ask me for cake pairing recommendations, flavor notes, allergy-safe options, or brewing tips!",
+      text: "Hello! I am your Deja Brew AI Coffee & Pairing Sommelier. Ask me for craft coffee recommendations, snack pairings, flavor notes, allergy-safe options, or brewing ratios!",
     },
   ]);
   const [input, setInput] = useState('');
@@ -40,10 +40,10 @@ export const CoffeeSommelierModal: React.FC<CoffeeSommelierModalProps> = ({
   if (!isOpen) return null;
 
   const quickPrompts = [
-    'What coffee pairs best with Chocolate Bliss Cake?',
-    'Recommend a light fruit cake for a birthday',
-    'How do I steam oat milk for rose lattes?',
-    'Suggest a pairing for Fresh Strawberry Cake',
+    'What snack pairs best with The Doppio?',
+    'Recommend a floral pour-over coffee',
+    'How do I steam oat milk for flat whites?',
+    'Suggest a pairing for Salted Caramel Apple Galette',
   ];
 
   const handleSend = (textToSend?: string) => {
@@ -66,18 +66,18 @@ export const CoffeeSommelierModal: React.FC<CoffeeSommelierModalProps> = ({
 
       const lower = query.toLowerCase();
 
-      if (lower.includes('chocolate') || lower.includes('bliss')) {
-        reply = "For our rich **Chocolate Bliss Cake**, we recommend pairing with our **Artisan Flat White** or a medium-dark Colombian espresso. The creamy micro-foam and toffee undertones cut through the 70% dark Belgian ganache beautifully!";
-        recommendation = { title: 'Order Chocolate Bliss Cake', actionHref: '/order' };
-      } else if (lower.includes('strawberry') || lower.includes('fruit') || lower.includes('birthday')) {
-        reply = "Our **Fresh Strawberry Fruit Cake** pairs like a dream with our **Rose Petal & Vanilla Latte** or a floral **Panama Geisha Pour Over**! It has light chiffon sponge and Chantilly cream that won't overwhelm your palate.";
-        recommendation = { title: 'View Fresh Strawberry Cake', actionHref: '/order' };
-      } else if (lower.includes('oat') || lower.includes('rose') || lower.includes('latte')) {
-        reply = "For our signature **Rose Petal Latte**, steam oat milk gently to 60°C maximum to preserve natural sweetness and silky micro-foam. Add 2 pumps of organic rose vanilla syrup for the perfect floral aroma!";
-        recommendation = { title: 'Order Rose Petal Latte', actionHref: '/order' };
+      if (lower.includes('doppio') || lower.includes('espresso') || lower.includes('truffle')) {
+        reply = "For our intense **Doppio Espresso**, we recommend pairing it with our handcrafted **Dark Chocolate Sea Salt Truffle**! The golden tiger-striped crema dissolves into 70% dark cocoa and crunchy sea salt for an exquisite contrast.";
+        recommendation = { title: 'Order Doppio + Truffle Pairing', actionHref: '/order' };
+      } else if (lower.includes('galette') || lower.includes('apple') || lower.includes('caramel')) {
+        reply = "Our warm **Salted Caramel Apple Galette** pairs sublimely with our **Classic Affogato** or a rich **Cortado**! The hot espresso and cool vanilla bean gelato highlight the caramelized Honeycrisp apples.";
+        recommendation = { title: 'Order Affogato & Galette', actionHref: '/order' };
+      } else if (lower.includes('v60') || lower.includes('pour') || lower.includes('floral')) {
+        reply = "Try our **Single-Origin V60 Pour-Over** paired with a slice of **Lemon Drizzle Pound Cake**! The delicate jasmine florals and peach sweetness of the Ethiopian Guji beans elevate the tart citrus glaze.";
+        recommendation = { title: 'Order V60 Pour-Over', actionHref: '/order' };
       } else {
-        reply = "At SweetCrumbs, every cake and pastry is baked fresh daily with natural ingredients, paired with freshly roasted micro-lot coffees. Check out our tasting box or order ahead for zero-wait counter pickup!";
-        recommendation = { title: 'Browse SweetCrumbs Menu', actionHref: '/order' };
+        reply = "At Deja Brew, every single-origin coffee is calibrated to perfection, paired with handcrafted artisanal bakery snacks. Check out our curated pairings or order ahead for zero-wait counter pickup!";
+        recommendation = { title: 'Browse Deja Brew Menu', actionHref: '/order' };
       }
 
       const aiMsg: Message = {
@@ -106,9 +106,9 @@ export const CoffeeSommelierModal: React.FC<CoffeeSommelierModalProps> = ({
             </div>
             <div>
               <h3 className="font-serif font-bold text-base text-[#2D2020] flex items-center gap-1.5">
-                <span>SweetCrumbs AI Advisor</span>
+                <span>Deja Brew AI Sommelier</span>
               </h3>
-              <p className="text-[10px] text-[#8C7575]">Cake pairings, recipes & brew advice</p>
+              <p className="text-[10px] text-[#8C7575]">Craft coffee pairings, tasting notes & recipes</p>
             </div>
           </div>
 
@@ -167,7 +167,7 @@ export const CoffeeSommelierModal: React.FC<CoffeeSommelierModalProps> = ({
           {isTyping && (
             <div className="flex items-center gap-2 text-xs text-[#8C7575] pl-9">
               <Sparkles className="w-3.5 h-3.5 text-[#E84A74] animate-spin" />
-              <span>SweetCrumbs AI is crafting an answer...</span>
+              <span>Deja Brew AI is crafting an answer...</span>
             </div>
           )}
 

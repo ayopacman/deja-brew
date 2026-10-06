@@ -7,12 +7,15 @@ import { MenuCard } from '../../components/menu/MenuCard';
 import { BookletMenuView } from '../../components/menu/BookletMenuView';
 import { CustomizationModal } from '../../components/menu/CustomizationModal';
 import { useOrder } from '../../context/OrderContext';
-import { Search, Coffee, BookOpen, Layers } from 'lucide-react';
+import { Search, BookOpen, Layers, Sparkles, Filter, X } from 'lucide-react';
 import { MenuItem } from '../../types/coffee';
+
+type DietaryFilter = 'all' | 'special' | 'vegan' | 'gluten-free' | 'low-cal';
 
 export default function OrderPage() {
   const { addToCart, addPairingToCart } = useOrder();
   const [selectedCategory, setSelectedCategory] = useState<CoffeeCategory | 'all'>('all');
+  const [dietaryFilter, setDietaryFilter] = useState<DietaryFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'booklet' | 'grid'>('booklet');
   const [selectedCustomItem, setSelectedCustomItem] = useState<MenuItem | null>(null);
@@ -33,26 +36,23 @@ export default function OrderPage() {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (item.flavorNotes && item.flavorNotes.some((n) => n.toLowerCase().includes(searchQuery.toLowerCase())));
-    return matchesCategory && matchesSearch;
+    
+    let matchesDietary = true;
+    if (dietaryFilter === 'special') {
+      matchesDietary = !!item.isHouseSpecial || !!item.isPopular;
+    } else if (dietaryFilter === 'vegan') {
+      matchesDietary = !!item.dietary?.includes('Vegan');
+    } else if (dietaryFilter === 'gluten-free') {
+      matchesDietary = !!item.dietary?.includes('Gluten-Free');
+    } else if (dietaryFilter === 'low-cal') {
+      matchesDietary = (item.calories || 0) <= 150 && (item.calories || 0) > 0;
+    }
+
+    return matchesCategory && matchesSearch && matchesDietary;
   });
 
   const handleSelectItem = (item: MenuItem) => {
-    if (item.isCustomizable) {
-      setSelectedCustomItem(item);
-    } else {
-      addToCart(
-        item,
-        item.defaultCustomization || {
-          milk: 'none',
-          shots: 'single',
-          syrup: 'none',
-          syrupPumps: 0,
-          temp: 'hot',
-          sweetness: '0%',
-        },
-        1
-      );
-    }
+    setSelectedCustomItem(item);
   };
 
   return (
@@ -61,14 +61,15 @@ export default function OrderPage() {
       {/* Header & Search */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#F8D7DF] pb-6">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#E84A74]">
-            deja brew • Order Ahead
+          <span className="text-xs font-bold uppercase tracking-wider text-[#E84A74] flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5" />
+            DEJA BREW ARTISAN COFFEE & PATISSERIE
           </span>
           <h1 className="font-serif font-black text-3xl sm:text-4xl text-[#2D2020] mt-1">
-            The Daily Grind Menu
+            Deja Brew Menu
           </h1>
           <p className="text-xs text-[#7A6767] mt-1">
-            Customize your milk, shot calibrations, syrup pumps, and pick up fresh at the bar.
+            Customize milk selections, calibrate espresso shots, flavor syrups, and order for express counter pickup.
           </p>
         </div>
 
@@ -80,63 +81,127 @@ export default function OrderPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search drinks, snacks..."
-              className="w-full bg-white border border-[#F8D7DF] focus:border-[#E84A74] text-[#2D2020] text-xs rounded-2xl pl-10 pr-4 py-3 focus:outline-none transition-colors shadow-xs"
+              placeholder="Search drinks, snacks, notes..."
+              className="w-full bg-white border border-[#F8D7DF] focus:border-[#E84A74] text-[#2D2020] text-xs rounded-2xl pl-10 pr-8 py-3 focus:outline-none transition-colors shadow-xs"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
-          <div className="flex items-center gap-1 bg-[#FFF0F3] p-1 rounded-xl border border-[#F8D7DF]">
+          <div className="flex items-center gap-1 bg-[#FFF0F3] p-1 rounded-2xl border border-[#F8D7DF]">
             <button
               onClick={() => setViewMode('booklet')}
-              className={`p-2 rounded-lg text-xs font-bold ${
-                viewMode === 'booklet' ? 'bg-[#E84A74] text-white shadow-xs' : 'text-[#5D4A4A]'
+              className={`p-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                viewMode === 'booklet' ? 'bg-[#E84A74] text-white shadow-xs' : 'text-[#5D4A4A] hover:bg-[#FFE3EB]'
               }`}
               title="Storybook Booklet View"
             >
               <BookOpen className="w-4 h-4" />
+              <span className="hidden sm:inline text-[11px]">Booklet</span>
             </button>
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg text-xs font-bold ${
-                viewMode === 'grid' ? 'bg-[#E84A74] text-white shadow-xs' : 'text-[#5D4A4A]'
+              className={`p-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                viewMode === 'grid' ? 'bg-[#E84A74] text-white shadow-xs' : 'text-[#5D4A4A] hover:bg-[#FFE3EB]'
               }`}
               title="Card Grid View"
             >
               <Layers className="w-4 h-4" />
+              <span className="hidden sm:inline text-[11px]">Grid</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Category Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => {
-              setSelectedCategory(cat.id);
-              if (viewMode === 'booklet' && cat.id !== 'all') {
-                setViewMode('grid');
-              }
-            }}
-            className={`px-4 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
-              selectedCategory === cat.id
-                ? 'bg-[#E84A74] text-white shadow-sm'
-                : 'bg-white border border-[#F8D7DF] text-[#5D4A4A] hover:bg-[#FFF0F3]'
-            }`}
-          >
-            <span>{cat.label}</span>
-            <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-              selectedCategory === cat.id ? 'bg-white text-[#E84A74]' : 'bg-[#FDE8ED] text-[#8C7575]'
-            }`}>
-              {cat.count}
-            </span>
-          </button>
-        ))}
+      {/* Category Pills & Dietary Quick Filters */}
+      <div className="space-y-3">
+        {/* Category Filter */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => {
+                setSelectedCategory(cat.id);
+                if (viewMode === 'booklet' && cat.id !== 'all') {
+                  setViewMode('grid');
+                }
+              }}
+              className={`px-4 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 ${
+                selectedCategory === cat.id
+                  ? 'bg-[#E84A74] text-white shadow-sm'
+                  : 'bg-white border border-[#F8D7DF] text-[#5D4A4A] hover:bg-[#FFF0F3]'
+              }`}
+            >
+              <span>{cat.label}</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                selectedCategory === cat.id ? 'bg-white text-[#E84A74]' : 'bg-[#FDE8ED] text-[#8C7575]'
+              }`}>
+                {cat.count}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Dietary / Preference Sub-filter */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+          <span className="text-[11px] font-bold text-[#8C6D6D] uppercase tracking-wider flex items-center gap-1 shrink-0 mr-1">
+            <Filter className="w-3 h-3 text-[#E84A74]" /> Filter:
+          </span>
+          {[
+            { id: 'all', label: 'All Diets' },
+            { id: 'special', label: '⭐ House Specials' },
+            { id: 'vegan', label: '🌱 100% Vegan' },
+            { id: 'gluten-free', label: '🌾 Gluten-Free' },
+            { id: 'low-cal', label: '🔥 Under 150 kcal' },
+          ].map((df) => (
+            <button
+              key={df.id}
+              onClick={() => {
+                setDietaryFilter(df.id as DietaryFilter);
+                if (viewMode === 'booklet' && df.id !== 'all') {
+                  setViewMode('grid');
+                }
+              }}
+              className={`px-3 py-1 rounded-xl text-[11px] font-medium transition-all whitespace-nowrap shrink-0 ${
+                dietaryFilter === df.id
+                  ? 'bg-[#FFF0F3] border-2 border-[#E84A74] text-[#E84A74] font-bold'
+                  : 'bg-white border border-[#F8D7DF] text-[#7A6767] hover:bg-[#FFF9F9]'
+              }`}
+            >
+              {df.label}
+            </button>
+          ))}
+
+          {(dietaryFilter !== 'all' || selectedCategory !== 'all' || searchQuery !== '') && (
+            <button
+              onClick={() => {
+                setDietaryFilter('all');
+                setSelectedCategory('all');
+                setSearchQuery('');
+              }}
+              className="text-[10px] text-[#E84A74] font-bold underline px-2 shrink-0 hover:text-[#C72E56]"
+            >
+              Reset Filters
+            </button>
+          )}
+        </div>
       </div>
 
+      {/* Results Count when filtered */}
+      {(selectedCategory !== 'all' || dietaryFilter !== 'all' || searchQuery !== '') && (
+        <div className="text-xs text-[#8C6D6D] font-medium">
+          Showing <span className="font-bold text-[#E84A74]">{filteredItems.length}</span> items
+        </div>
+      )}
+
       {/* Content View */}
-      {viewMode === 'booklet' && selectedCategory === 'all' && searchQuery === '' ? (
+      {viewMode === 'booklet' && selectedCategory === 'all' && dietaryFilter === 'all' && searchQuery === '' ? (
         <BookletMenuView
           onSelectItem={handleSelectItem}
           onSelectPairing={(drink, snack) => addPairingToCart(drink, snack)}

@@ -36,6 +36,12 @@ export interface MenuItem {
   flavorNotes?: string[];
   calories?: number;
   isPopular?: boolean;
+  isHouseSpecial?: boolean;
+  intensity?: number; // 1 to 5 bean rating
+  roastType?: 'Light' | 'Medium' | 'Medium-Dark' | 'Dark';
+  dietary?: ('Vegan' | 'Vegetarian' | 'Gluten-Free' | 'Nut-Free' | 'Dairy-Free')[];
+  originEstate?: string;
+  altitude?: string;
   isCustomizable: boolean;
   defaultCustomization?: CustomizationOptions;
 }
@@ -68,10 +74,14 @@ export interface Order {
   customerName: string;
   customerPhone?: string;
   customerEmail?: string;
+  orderType?: OrderType;
+  tableNumber?: string;
   items: CartItem[];
   subtotal: number;
   tax: number;
   tip: number;
+  discountCode?: string;
+  discountAmount?: number;
   total: number;
   pickupTime: string;
   status: OrderStatus;
@@ -116,3 +126,56 @@ export interface BrewGuide {
     targetWaterGrams: (coffee: number) => number;
   }[];
 }
+
+export type OrderType = 'takeaway' | 'dine-in';
+
+export interface GiftVoucher {
+  id: string;
+  code: string;
+  theme: 'ribbon-pink' | 'wavy-pastel' | 'gold-seal' | 'sakura-elegance';
+  recipientName: string;
+  senderName: string;
+  amount: number;
+  discountType: 'fixed' | 'percent';
+  message: string;
+  expiryDate: string;
+  createdAt: number;
+  isRedeemed?: boolean;
+}
+
+export interface OriginRegion {
+  id: string;
+  name: string;
+  country: string;
+  estateName: string;
+  altitude: string;
+  process: string;
+  roastProfile: string;
+  flavorNotes: string[];
+  description: string;
+  image: string;
+  coordinates: { x: number; y: number }; // Percentage for custom map pin
+  matchedMenuItems: string[];
+}
+
+export interface CustomerReview {
+  id: string;
+  author: string;
+  avatar: string;
+  rating: number;
+  date: string;
+  comment: string;
+  favoriteItem: string;
+  photoUrl?: string;
+  verifiedVisit: boolean;
+}
+
+export interface AmbientTrack {
+  id: string;
+  title: string;
+  subtitle: string;
+  type: 'lofi' | 'rain' | 'cafe_ambient';
+  audioSrc?: string;
+  icon: string;
+}
+

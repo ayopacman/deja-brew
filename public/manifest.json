@@ -1,11 +1,11 @@
 {
-  "name": "Click & Sip Specialty Coffee PWA",
-  "short_name": "Click & Sip",
+  "name": "Deja Brew Artisan Coffee & Bakery",
+  "short_name": "Deja Brew",
   "description": "Artisan coffee ordering, real-time barista pickup tracking, and bean tasting club.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#14110F",
-  "theme_color": "#965B32",
+  "background_color": "#FFF9F9",
+  "theme_color": "#E84A74",
   "icons": [
     {
       "src": "/icon-192.png",

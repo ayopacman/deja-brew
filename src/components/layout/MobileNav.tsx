@@ -1,9 +1,7 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Cake, PackageCheck, Layers, Radio, Sparkles } from 'lucide-react';
+import { Coffee, PackageCheck, Sparkles, Heart } from 'lucide-react';
 import { useOrder } from '../../context/OrderContext';
 
 interface MobileNavProps {
@@ -12,10 +10,9 @@ interface MobileNavProps {
 
 export const MobileNav: React.FC<MobileNavProps> = ({ onOpenSommelier }) => {
   const pathname = usePathname();
-  const { activeOrder, orders } = useOrder();
+  const { activeOrder } = useOrder();
 
   const isOrderActive = activeOrder && (activeOrder.status === 'received' || activeOrder.status === 'brewing' || activeOrder.status === 'ready');
-  const activeKdsCount = orders.filter((o) => o.status === 'received' || o.status === 'brewing').length;
 
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-[#F8D7DF] px-2 py-2 flex items-center justify-around text-[#8C7575] shadow-lg">
@@ -25,7 +22,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onOpenSommelier }) => {
           pathname === '/' ? 'text-[#E84A74] font-bold' : 'hover:text-[#E84A74]'
         }`}
       >
-        <Cake className="w-5 h-5 mb-0.5" />
+        <Coffee className="w-5 h-5 mb-0.5" />
         <span>Home</span>
       </Link>
 
@@ -35,7 +32,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onOpenSommelier }) => {
           pathname === '/order' ? 'text-[#E84A74] font-bold' : 'hover:text-[#E84A74]'
         }`}
       >
-        <Cake className="w-5 h-5 mb-0.5" />
+        <Coffee className="w-5 h-5 mb-0.5" />
         <span>Menu</span>
       </Link>
 
@@ -46,7 +43,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onOpenSommelier }) => {
         <div className="p-1.5 rounded-full bg-[#FDE8ED] text-[#E84A74]">
           <Sparkles className="w-4 h-4" />
         </div>
-        <span>AI Ask</span>
+        <span>AI Sommelier</span>
       </button>
 
       <Link
@@ -68,20 +65,13 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onOpenSommelier }) => {
       </Link>
 
       <Link
-        href="/kds"
+        href="/subscription"
         className={`flex flex-col items-center py-1 px-2.5 rounded-xl text-[10px] font-medium transition-colors relative ${
-          pathname === '/kds' ? 'text-[#E84A74] font-bold' : 'hover:text-[#E84A74]'
+          pathname === '/subscription' ? 'text-[#E84A74] font-bold' : 'hover:text-[#E84A74]'
         }`}
       >
-        <div className="relative">
-          <Radio className="w-5 h-5 mb-0.5 text-[#E84A74]" />
-          {activeKdsCount > 0 && (
-            <span className="absolute -top-1.5 -right-2 bg-[#E84A74] text-white text-[9px] font-black px-1 rounded-full">
-              {activeKdsCount}
-            </span>
-          )}
-        </div>
-        <span>KDS</span>
+        <Heart className="w-5 h-5 mb-0.5" />
+        <span>Club</span>
       </Link>
     </nav>
   );

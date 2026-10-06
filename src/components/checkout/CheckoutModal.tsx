@@ -21,7 +21,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   tipAmount,
 }) => {
   const router = useRouter();
-  const { createOrder, cartTotal, setIsCartOpen } = useOrder();
+  const { createOrder, cartTotal, cartSubtotal, cartTax, cartDiscount, appliedCoupon, orderType, setOrderType, tableNumber, setTableNumber, setIsCartOpen } = useOrder();
 
   const [name, setName] = useState('Aarav Sharma');
   const [phone, setPhone] = useState('+91 98765 43210');
@@ -37,7 +37,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      alert('Please enter a name for the pickup ticket');
+      alert('Please enter a name for the order ticket');
       return;
     }
 
@@ -49,7 +49,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           customerName: name,
           customerPhone: phone,
           customerEmail: email,
-          pickupTime,
+          orderType,
+          tableNumber: orderType === 'dine-in' ? tableNumber : undefined,
+          pickupTime: orderType === 'dine-in' ? `Dine-In (${tableNumber})` : pickupTime,
           paymentMethod,
           tip: tipAmount,
         });
@@ -80,18 +82,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-md bg-white border border-[#F8D7DF] rounded-3xl overflow-hidden shadow-2xl text-[#2D2020]"
+        className="relative w-full max-w-md bg-white border border-[#F8D7DF] rounded-3xl overflow-hidden shadow-2xl text-[#2D2020] max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="p-4 bg-[#FFF0F3] border-b border-[#F8D7DF] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#E84A74] flex items-center justify-center text-white">
-              <Sparkles className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-lg overflow-hidden border border-[#F8D7DF] bg-white flex items-center justify-center p-0.5 shadow-xs">
+              <img src="/icon.png" alt="Deja Brew" className="w-full h-full object-contain rounded-md" />
             </div>
             <div>
-              <h3 className="font-serif font-black text-base text-[#2D2020]">deja brew Checkout</h3>
-              <p className="text-[10px] text-[#8C7575]">Instant Order Ahead & Barista Handoff</p>
+              <h3 className="font-serif font-black text-base text-[#2D2020]">Deja Brew Checkout</h3>
+              <p className="text-[10px] text-[#8C7575]">Instant Order & Barista Handoff</p>
             </div>
           </div>
           {!isProcessing && !isSuccess && (
@@ -112,7 +114,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </div>
             <h3 className="font-serif font-bold text-2xl text-[#2D2020]">Order Placed!</h3>
             <p className="text-xs text-[#8C7575] max-w-xs">
-              Your drink ticket is now live on the barista kitchen display!
+              {orderType === 'dine-in'
+                ? `Your order will be served directly to ${tableNumber}!`
+                : 'Your pickup ticket is live on the barista kitchen display!'}
             </p>
             <div className="flex items-center gap-2 text-xs font-semibold text-[#E84A74] bg-[#FFF0F3] px-4 py-2 rounded-xl border border-[#F8D7DF]">
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -122,10 +126,58 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         ) : (
           <form onSubmit={handlePay} className="p-5 space-y-4 text-xs">
             
+            {/* Dining Mode (Takeaway vs Dine-in Table) */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold text-[#8C7575] uppercase tracking-wider block">
+                Order Type & Service
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setOrderType('takeaway')}
+                  className={`p-2.5 rounded-xl border font-bold transition-all ${
+                    orderType === 'takeaway'
+                      ? 'bg-[#E84A74] text-white border-[#E84A74] shadow-xs'
+                      : 'bg-[#FFF9F9] border-[#F8D7DF] text-[#7A6767]'
+                  }`}
+                >
+                  🥡 Takeaway Pickup
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOrderType('dine-in')}
+                  className={`p-2.5 rounded-xl border font-bold transition-all ${
+                    orderType === 'dine-in'
+                      ? 'bg-[#E84A74] text-white border-[#E84A74] shadow-xs'
+                      : 'bg-[#FFF9F9] border-[#F8D7DF] text-[#7A6767]'
+                  }`}
+                >
+                  🪑 Dine-In (Table)
+                </button>
+              </div>
+
+              {orderType === 'dine-in' && (
+                <div className="pt-1 animate-in fade-in duration-150">
+                  <label className="text-[10px] font-bold text-[#8C7575] block mb-1">
+                    Select Your Table
+                  </label>
+                  <select
+                    value={tableNumber}
+                    onChange={(e) => setTableNumber(e.target.value)}
+                    className="w-full bg-[#FFF0F3] border border-[#F8D7DF] text-[#2D2020] font-bold rounded-xl p-2.5 focus:outline-none focus:border-[#E84A74]"
+                  >
+                    {['Table 1 (Window)', 'Table 2 (Cozy Nook)', 'Table 3 (Blossom Garden)', 'Table 4 (Bar Counter)', 'Table 5 (Terrace)', 'Table 6 (Reading Loft)'].map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
             {/* Customer Details */}
             <div className="space-y-2">
               <label className="text-[11px] font-bold text-[#8C7575] uppercase tracking-wider block">
-                Pickup Customer Details
+                Customer Details
               </label>
 
               <div>
@@ -134,7 +186,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Your Name (called at counter)"
+                  placeholder="Your Name (for order ticket)"
                   className="w-full bg-[#FFF8F8] border border-[#F8D7DF] text-[#2D2020] rounded-xl p-3 focus:outline-none focus:border-[#E84A74]"
                 />
               </div>
@@ -205,10 +257,32 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
             </div>
 
-            {/* Total */}
-            <div className="p-3 bg-[#FFF0F3] rounded-xl border border-[#F8D7DF] flex justify-between items-center text-xs">
-              <span className="text-[#8C7575] font-medium">Total Payable:</span>
-              <span className="font-mono font-bold text-base text-[#E84A74]">₹{total}</span>
+            {/* Price Summary Breakdown */}
+            <div className="p-3 bg-[#FFF0F3] rounded-xl border border-[#F8D7DF] space-y-1.5 text-xs">
+              <div className="flex justify-between text-[#8C7575]">
+                <span>Items Subtotal:</span>
+                <span className="font-mono text-[#2D2020]">₹{cartSubtotal}</span>
+              </div>
+              {cartDiscount > 0 && (
+                <div className="flex justify-between text-emerald-700 font-bold">
+                  <span>Coupon Discount ({appliedCoupon?.code}):</span>
+                  <span className="font-mono">-₹{cartDiscount}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-[#8C7575]">
+                <span>GST (5%):</span>
+                <span className="font-mono text-[#2D2020]">₹{cartTax}</span>
+              </div>
+              {tipAmount > 0 && (
+                <div className="flex justify-between text-[#8C7575]">
+                  <span>Barista Tip:</span>
+                  <span className="font-mono text-[#E84A74]">+₹{tipAmount}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center pt-2 border-t border-[#F8D7DF] text-sm font-bold">
+                <span className="text-[#2D2020]">Total Payable:</span>
+                <span className="font-mono font-bold text-base text-[#E84A74]">₹{total}</span>
+              </div>
             </div>
 
             {/* CTA */}
@@ -223,7 +297,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <span>Processing Payment...</span>
                 </>
               ) : (
-                <span>Pay ₹{total} & Send to Barista</span>
+                <span>Pay ₹{total} & Place Order</span>
               )}
             </button>
           </form>

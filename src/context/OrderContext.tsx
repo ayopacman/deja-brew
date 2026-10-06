@@ -1,8 +1,15 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { CartItem, CustomizationOptions, MenuItem, Order, OrderStatus } from '../types/coffee';
-import { MENU_ITEMS } from '../data/coffeeData';
+import { CartItem, CustomizationOptions, MenuItem, Order, OrderStatus, OrderType } from '../types/coffee';
+import { MENU_ITEMS, PROMO_COUPONS } from '../data/coffeeData';
+
+interface AppliedCoupon {
+  code: string;
+  discount: number;
+  type: 'percent' | 'fixed';
+  description: string;
+}
 
 interface OrderContextType {
   cart: CartItem[];
@@ -13,16 +20,31 @@ interface OrderContextType {
   clearCart: () => void;
   cartSubtotal: number;
   cartTax: number;
+  cartDiscount: number;
   cartTotal: number;
   cartCount: number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
+
+  appliedCoupon: AppliedCoupon | null;
+  applyCoupon: (code: string) => { success: boolean; message: string };
+  removeCoupon: () => void;
+
+  orderType: OrderType;
+  setOrderType: (type: OrderType) => void;
+  tableNumber: string;
+  setTableNumber: (table: string) => void;
+
+  soldOutItemIds: string[];
+  toggleSoldOut: (itemId: string) => void;
 
   orders: Order[];
   createOrder: (data: {
     customerName: string;
     customerPhone?: string;
     customerEmail?: string;
+    orderType?: OrderType;
+    tableNumber?: string;
     pickupTime: string;
     paymentMethod: 'upi' | 'card' | 'apple-pay' | 'google-pay' | 'counter';
     tip?: number;
@@ -143,10 +165,19 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Gamification & Dine-In State
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+  const [orderType, setOrderType] = useState<OrderType>('takeaway');
+  const [tableNumber, setTableNumber] = useState<string>('Table 1');
+  const [soldOutItemIds, setSoldOutItemIds] = useState<string[]>([]);
+
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem('dejabrew_cart');
       if (savedCart) setCart(JSON.parse(savedCart));
+
+      const savedSoldOut = localStorage.getItem('dejabrew_sold_out');
+      if (savedSoldOut) setSoldOutItemIds(JSON.parse(savedSoldOut));
 
       const savedOrders = localStorage.getItem('dejabrew_orders');
       if (savedOrders) {
@@ -159,6 +190,11 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const savedActive = localStorage.getItem('dejabrew_active_order');
       if (savedActive) {
         setActiveOrder(JSON.parse(savedActive));
+      }
+
+      const savedCoupon = localStorage.getItem('dejabrew_coupon');
+      if (savedCoupon) {
+        setAppliedCoupon(JSON.parse(savedCoupon));
       }
     } catch (e) {
       console.warn('Storage read error', e);
@@ -302,13 +338,51 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const cartSubtotal = cart.reduce((sum, item) => sum + item.itemTotal, 0);
   const cartTax = Math.round(cartSubtotal * 0.05); // 5% GST
-  const cartTotal = cartSubtotal + cartTax;
+
+  // Calculate discount
+  let cartDiscount = 0;
+  if (appliedCoupon && cartSubtotal > 0) {
+    if (appliedCoupon.type === 'percent') {
+      cartDiscount = Math.round((cartSubtotal * appliedCoupon.discount) / 100);
+    } else {
+      cartDiscount = Math.min(appliedCoupon.discount, cartSubtotal);
+    }
+  }
+
+  const cartTotal = Math.max(0, cartSubtotal + cartTax - cartDiscount);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const applyCoupon = (code: string) => {
+    const upper = code.trim().toUpperCase();
+    const found = PROMO_COUPONS[upper];
+    if (found) {
+      if (cartSubtotal < found.minSpend) {
+        return { success: false, message: `Minimum order spend for ${upper} is ₹${found.minSpend}` };
+      }
+      const couponObj: AppliedCoupon = {
+        code: upper,
+        discount: found.discount,
+        type: found.type,
+        description: found.description
+      };
+      setAppliedCoupon(couponObj);
+      localStorage.setItem('dejabrew_coupon', JSON.stringify(couponObj));
+      return { success: true, message: `Coupon ${upper} applied! (${found.description})` };
+    }
+    return { success: false, message: 'Invalid or expired coupon code. Try DEJALOVE or LUCKYBEAN50.' };
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    localStorage.removeItem('dejabrew_coupon');
+  };
 
   const createOrder = async (data: {
     customerName: string;
     customerPhone?: string;
     customerEmail?: string;
+    orderType?: OrderType;
+    tableNumber?: string;
     pickupTime: string;
     paymentMethod: 'upi' | 'card' | 'apple-pay' | 'google-pay' | 'counter';
     tip?: number;
@@ -323,10 +397,14 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       customerName: data.customerName,
       customerPhone: data.customerPhone,
       customerEmail: data.customerEmail,
+      orderType: data.orderType || orderType,
+      tableNumber: data.orderType === 'dine-in' ? (data.tableNumber || tableNumber) : undefined,
       items: [...cart],
       subtotal: cartSubtotal,
       tax: cartTax,
       tip,
+      discountCode: appliedCoupon?.code,
+      discountAmount: cartDiscount > 0 ? cartDiscount : undefined,
       total: totalWithTip,
       pickupTime: data.pickupTime,
       status: 'received',
@@ -340,6 +418,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const updated = [newOrder, ...orders];
     saveAndBroadcastOrders(updated, newOrder);
     clearCart();
+    removeCoupon();
     return newOrder;
   };
 
@@ -362,6 +441,20 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     saveAndBroadcastOrders(updated, currentActive);
   };
 
+  const toggleSoldOut = (itemId: string) => {
+    setSoldOutItemIds((prev) => {
+      const next = prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId];
+      try {
+        localStorage.setItem('dejabrew_sold_out', JSON.stringify(next));
+      } catch (e) {
+        console.warn('Save sold out error', e);
+      }
+      return next;
+    });
+  };
+
   const getOrderById = (orderId: string) => {
     return orders.find((o) => o.id === orderId || o.orderNumber === orderId);
   };
@@ -381,10 +474,20 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         clearCart,
         cartSubtotal,
         cartTax,
+        cartDiscount,
         cartTotal,
         cartCount,
         isCartOpen,
         setIsCartOpen,
+        appliedCoupon,
+        applyCoupon,
+        removeCoupon,
+        orderType,
+        setOrderType,
+        tableNumber,
+        setTableNumber,
+        soldOutItemIds,
+        toggleSoldOut,
         orders,
         createOrder,
         updateOrderStatus,

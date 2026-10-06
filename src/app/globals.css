@@ -42,3 +42,19 @@ body {
   height: 12px;
   width: 100%;
 }
+
+/* Theme Classes */
+.theme-matcha {
+  --primary-pink: #4A7C59;
+  --soft-pink: #EBF4EC;
+  --border-pink: #CBE3D0;
+  filter: hue-rotate(75deg);
+}
+
+.theme-caramel-dark {
+  --primary-pink: #C87D55;
+  --soft-pink: #F7EDE2;
+  --border-pink: #EBD4C1;
+  filter: sepia(0.25) contrast(1.05);
+}
+
