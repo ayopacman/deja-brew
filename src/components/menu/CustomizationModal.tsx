@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { MenuItem, CustomizationOptions, MilkOption, ShotOption, SyrupOption, TempOption, SweetnessOption } from '../../types/coffee';
-import { X, Flame, Snowflake, Plus, Minus, Cake, Sparkles } from 'lucide-react';
+import { X, Flame, Snowflake, Plus, Minus, Coffee, Sparkles } from 'lucide-react';
 import { playSoundEffect } from '../../utils/sound';
 
 interface CustomizationModalProps {
@@ -24,15 +24,15 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
   const [syrup, setSyrup] = useState<SyrupOption>(item.defaultCustomization?.syrup || 'none');
   const [syrupPumps, setSyrupPumps] = useState<number>(item.defaultCustomization?.syrupPumps || 0);
   const [temp, setTemp] = useState<TempOption>(item.defaultCustomization?.temp || 'hot');
-  const [sweetness, setSweetness] = useState<SweetnessOption>(item.defaultCustomization?.sweetness || '100%');
+  const [sweetness, setSweetness] = useState<SweetnessOption>(item.defaultCustomization?.sweetness || '0%');
   const [notes, setNotes] = useState<string>('');
 
   if (!isOpen) return null;
 
   let extraCost = 0;
-  if (milk === 'oat' || milk === 'almond' || milk === 'coconut') extraCost += 0.75;
-  if (shots === 'triple') extraCost += 1.00;
-  if (syrup !== 'none' && syrupPumps > 0) extraCost += 0.50;
+  if (milk === 'oat' || milk === 'almond' || milk === 'coconut') extraCost += 50;
+  if (shots === 'triple') extraCost += 60;
+  if (syrup !== 'none' && syrupPumps > 0) extraCost += 40;
 
   const unitPrice = item.price + extraCost;
   const totalPrice = unitPrice * quantity;
@@ -55,7 +55,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
     onClose();
   };
 
-  const isDrink = item.category === 'espresso' || item.category === 'signature-lattes' || item.category === 'cold-brew' || item.category === 'pour-over';
+  const isCoffee = item.category === 'espresso' || item.category === 'milk-based' || item.category === 'brewed' || item.category === 'iced';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
@@ -74,21 +74,21 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
           
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-[#5D4A4A] flex items-center justify-center shadow-xs transition-all"
+            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-[#5D4A4A] flex items-center justify-center shadow-xs transition-all"
           >
             <X className="w-4 h-4" />
           </button>
 
           <div className="absolute bottom-3 left-5 right-5">
             <h2 className="text-lg font-serif font-bold text-[#2D2020]">{item.name}</h2>
-            <p className="text-xs text-[#E84A74] font-semibold">${item.price.toFixed(2)} base</p>
+            <p className="text-xs text-[#E84A74] font-bold">₹{item.price} base</p>
           </div>
         </div>
 
         {/* Customization Details */}
         <div className="flex-1 overflow-y-auto p-5 space-y-5 text-xs">
           
-          {isDrink ? (
+          {isCoffee && (
             <>
               {/* Temperature */}
               <div>
@@ -106,7 +106,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                     }`}
                   >
                     <Flame className="w-4 h-4 text-[#E84A74]" />
-                    <span>Warm / Hot</span>
+                    <span>Hot & Steamed</span>
                   </button>
                   <button
                     type="button"
@@ -118,50 +118,77 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                     }`}
                   >
                     <Snowflake className="w-4 h-4 text-[#0284C7]" />
-                    <span>Iced</span>
+                    <span>Over Crystal Ice</span>
                   </button>
                 </div>
               </div>
 
-              {/* Milk */}
+              {/* Milk Option */}
               <div>
-                <label className="text-[11px] font-bold text-[#8C7575] uppercase tracking-wider block mb-2">
-                  Milk Type
-                </label>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-[11px] font-bold text-[#8C7575] uppercase tracking-wider">
+                    Milk Option
+                  </label>
+                  <span className="text-[10px] text-[#E84A74] font-bold">Plant-based +₹50</span>
+                </div>
                 <div className="grid grid-cols-3 gap-2">
-                  {['whole', 'oat', 'almond'].map((m) => (
+                  {[
+                    { id: 'whole', label: 'Whole Milk' },
+                    { id: 'oat', label: 'Oat Milk', extra: '+₹50' },
+                    { id: 'almond', label: 'Almond Milk', extra: '+₹50' },
+                    { id: 'coconut', label: 'Coconut Milk', extra: '+₹50' },
+                    { id: 'none', label: 'Black (No Milk)' },
+                  ].map((m) => (
                     <button
-                      key={m}
+                      key={m.id}
                       type="button"
-                      onClick={() => setMilk(m as MilkOption)}
-                      className={`p-2 rounded-xl text-center capitalize border text-xs font-medium transition-all ${
-                        milk === m
+                      onClick={() => setMilk(m.id as MilkOption)}
+                      className={`p-2 rounded-xl text-center border text-xs font-medium transition-all ${
+                        milk === m.id
                           ? 'bg-[#FDE8ED] border-[#E84A74] text-[#E84A74] font-bold'
                           : 'bg-white border-[#F8D7DF] text-[#5D4A4A]'
                       }`}
                     >
-                      {m} milk {m !== 'whole' && '(+$0.75)'}
+                      <div>{m.label}</div>
+                      {m.extra && <div className="text-[9px] text-[#E84A74]">{m.extra}</div>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Espresso Shots */}
+              <div>
+                <label className="text-[11px] font-bold text-[#8C7575] uppercase tracking-wider block mb-2">
+                  Espresso Shot Calibration
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'single', label: 'Single Shot' },
+                    { id: 'double', label: 'Double Shot' },
+                    { id: 'triple', label: 'Triple Shot (+₹60)' },
+                  ].map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setShots(s.id as ShotOption)}
+                      className={`p-2 rounded-xl text-center border text-xs font-medium transition-all ${
+                        shots === s.id
+                          ? 'bg-[#FDE8ED] border-[#E84A74] text-[#E84A74] font-bold'
+                          : 'bg-white border-[#F8D7DF] text-[#5D4A4A]'
+                      }`}
+                    >
+                      {s.label}
                     </button>
                   ))}
                 </div>
               </div>
             </>
-          ) : (
-            <div>
-              <label className="text-[11px] font-bold text-[#8C7575] uppercase tracking-wider block mb-2">
-                Bakery Options
-              </label>
-              <div className="p-3 bg-[#FFF8F8] border border-[#F8D7DF] rounded-xl text-xs text-[#5D4A4A] space-y-1">
-                <p>✓ Freshly baked with 100% natural ingredients</p>
-                <p>✓ Packaged in eco-friendly pink bakery gift box</p>
-              </div>
-            </div>
           )}
 
           {/* Sweetness */}
           <div>
             <label className="text-[11px] font-bold text-[#8C7575] uppercase tracking-wider block mb-2">
-              Sweetness / Sugar Level
+              Sweetness Level
             </label>
             <div className="grid grid-cols-4 gap-2">
               {(['0%', '25%', '50%', '100%'] as SweetnessOption[]).map((level) => (
@@ -181,16 +208,16 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
             </div>
           </div>
 
-          {/* Special Instructions */}
+          {/* Barista Notes */}
           <div>
             <label className="text-[11px] font-bold text-[#8C7575] uppercase tracking-wider block mb-1.5">
-              Custom Message / Instructions (e.g. Birthday Message, Allergy)
+              Special Instructions for Barista
             </label>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="e.g., Happy Birthday Sarah! on cake plate, extra sprinkles..."
+              placeholder="e.g., extra hot, light foam, less ice..."
               className="w-full bg-[#FFF8F8] border border-[#F8D7DF] text-[#2D2020] text-xs rounded-xl p-3 focus:outline-none focus:border-[#E84A74]"
             />
           </div>
@@ -222,8 +249,8 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
             onClick={handleAdd}
             className="flex-1 bg-[#E84A74] hover:bg-[#D43862] text-white font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-between shadow-md shadow-[#E84A74]/20 transition-all hover:scale-[1.01]"
           >
-            <span>Add to Cart</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span>Add to Order</span>
+            <span>₹{totalPrice}</span>
           </button>
         </div>
       </div>

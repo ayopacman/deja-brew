@@ -4,10 +4,9 @@ import React, { useState } from 'react';
 import { MenuItem, CustomizationOptions } from '../../types/coffee';
 import { ShoppingCart, Star, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { CustomizationModal } from './CustomizationModal';
-import { ExtendedMenuItem } from '../../data/coffeeData';
 
 interface MenuCardProps {
-  item: ExtendedMenuItem;
+  item: MenuItem;
   onAddToCart: (item: MenuItem, customization: CustomizationOptions, quantity: number) => void;
 }
 
@@ -26,32 +25,28 @@ export const MenuCard: React.FC<MenuCardProps> = ({ item, onAddToCart }) => {
           syrup: 'none',
           syrupPumps: 0,
           temp: 'hot',
-          sweetness: '100%',
+          sweetness: '0%',
         },
         1
       );
     }
   };
 
-  const rating = item.rating || 5.0;
-  const reviewCount = item.reviewCount || 95;
-
   return (
     <>
       <div className="group flex flex-col bg-white border border-[#F8D7DF] rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-[#E84A74]/10 hover:-translate-y-1 text-[#2D2020]">
         
         {/* Card Image */}
-        <div className="relative h-48 w-full overflow-hidden bg-[#FFF0F3] p-3 flex items-center justify-center">
+        <div className="relative h-44 w-full overflow-hidden bg-[#FFF0F3] p-2 flex items-center justify-center">
           <img
             src={item.image}
             alt={item.name}
             className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500"
           />
 
-          {item.isSeasonal && (
-            <span className="absolute top-4 left-4 bg-[#E84A74] text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-xs flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5" />
-              Special
+          {item.subcategory && (
+            <span className="absolute top-3 left-3 bg-[#E84A74] text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-xs">
+              {item.subcategory.split('&')[0]}
             </span>
           )}
         </div>
@@ -63,36 +58,30 @@ export const MenuCard: React.FC<MenuCardProps> = ({ item, onAddToCart }) => {
               {item.name}
             </h3>
 
-            {/* 5-Star Ratings as in screenshot */}
-            <div className="flex items-center gap-1 mt-1">
-              <div className="flex text-amber-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <span className="text-[10px] text-[#8C7575] font-medium">({reviewCount})</span>
-            </div>
+            <p className="text-[11px] text-[#8C7575] mt-1 line-clamp-2">
+              {item.tagline || item.description}
+            </p>
 
             {/* Price */}
-            <div className="font-bold text-sm text-[#2D2020] mt-2">
-              ${item.price.toFixed(2)}
+            <div className="font-mono font-bold text-sm text-[#D8315B] mt-2">
+              ₹{item.price}
             </div>
           </div>
 
-          {/* Action CTA: Add to Cart Button (matches screenshot) */}
+          {/* Action Button */}
           <div className="pt-2">
             {item.isCustomizable ? (
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="w-full bg-[#E84A74] hover:bg-[#D43862] text-white text-xs font-semibold py-2 px-3 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-[#E84A74]/20 hover:scale-[1.02]"
+                className="w-full bg-[#E84A74] hover:bg-[#D43862] text-white text-xs font-semibold py-2 px-3 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-sm hover:scale-[1.02]"
               >
-                <ShoppingCart className="w-3.5 h-3.5" />
-                <span>Add to Cart</span>
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                <span>Customize & Order</span>
               </button>
             ) : (
               <button
                 onClick={handleQuickAdd}
-                className="w-full bg-[#E84A74] hover:bg-[#D43862] text-white text-xs font-semibold py-2 px-3 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-[#E84A74]/20 hover:scale-[1.02]"
+                className="w-full bg-[#E84A74] hover:bg-[#D43862] text-white text-xs font-semibold py-2 px-3 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-sm hover:scale-[1.02]"
               >
                 <ShoppingCart className="w-3.5 h-3.5" />
                 <span>Add to Cart</span>
@@ -102,7 +91,6 @@ export const MenuCard: React.FC<MenuCardProps> = ({ item, onAddToCart }) => {
         </div>
       </div>
 
-      {/* Customization Modal */}
       {isModalOpen && (
         <CustomizationModal
           item={item}

@@ -7,6 +7,7 @@ import { MENU_ITEMS } from '../data/coffeeData';
 interface OrderContextType {
   cart: CartItem[];
   addToCart: (item: MenuItem, customization: CustomizationOptions, quantity?: number) => void;
+  addPairingToCart: (drinkItem: MenuItem, snackItem: MenuItem) => void;
   removeFromCart: (cartItemId: string) => void;
   updateQuantity: (cartItemId: string, quantity: number) => void;
   clearCart: () => void;
@@ -23,7 +24,7 @@ interface OrderContextType {
     customerPhone?: string;
     customerEmail?: string;
     pickupTime: string;
-    paymentMethod: 'card' | 'apple-pay' | 'google-pay' | 'counter';
+    paymentMethod: 'upi' | 'card' | 'apple-pay' | 'google-pay' | 'counter';
     tip?: number;
   }) => Promise<Order>;
   updateOrderStatus: (orderId: string, newStatus: OrderStatus) => void;
@@ -37,15 +38,15 @@ const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
 const SAMPLE_ORDERS: Order[] = [
   {
-    id: 'ord-8012',
-    orderNumber: '#8012',
-    customerName: 'Marcus Vance',
-    customerPhone: '+1 (555) 342-9901',
-    customerEmail: 'marcus.v@example.com',
+    id: 'ord-101',
+    orderNumber: '#101',
+    customerName: 'Aarav Sharma',
+    customerPhone: '+91 98765 43210',
+    customerEmail: 'aarav@example.com',
     items: [
       {
         id: 'ci-1',
-        menuItem: MENU_ITEMS[0], // Artisan Flat White
+        menuItem: MENU_ITEMS[7], // The Flat White
         quantity: 1,
         customization: {
           milk: 'oat',
@@ -54,13 +55,13 @@ const SAMPLE_ORDERS: Order[] = [
           syrupPumps: 0,
           temp: 'hot',
           sweetness: '0%',
-          notes: 'Extra silky micro-foam please'
+          notes: 'Extra silky microfoam'
         },
-        itemTotal: 5.50
+        itemTotal: 330
       },
       {
         id: 'ci-2',
-        menuItem: MENU_ITEMS[8], // Cardamom Morning Bun
+        menuItem: MENU_ITEMS[20], // Toasted Banana Walnut Bread
         quantity: 1,
         customization: {
           milk: 'none',
@@ -70,87 +71,68 @@ const SAMPLE_ORDERS: Order[] = [
           temp: 'hot',
           sweetness: '0%'
         },
-        itemTotal: 4.95
+        itemTotal: 190
       }
     ],
-    subtotal: 10.45,
-    tax: 0.84,
-    tip: 2.00,
-    total: 13.29,
+    subtotal: 520,
+    tax: 26,
+    tip: 40,
+    total: 586,
     pickupTime: 'ASAP (~8 mins)',
     status: 'brewing',
-    createdAt: Date.now() - 4 * 60 * 1000, // 4 mins ago
-    updatedAt: Date.now() - 2 * 60 * 1000,
-    paymentMethod: 'apple-pay',
+    createdAt: Date.now() - 3 * 60 * 1000,
+    updatedAt: Date.now() - 1 * 60 * 1000,
+    paymentMethod: 'upi',
     paymentStatus: 'paid',
-    estimatedReadyTime: Date.now() + 4 * 60 * 1000
+    estimatedReadyTime: Date.now() + 5 * 60 * 1000
   },
   {
-    id: 'ord-8013',
-    orderNumber: '#8013',
-    customerName: 'Elena Rostova',
-    customerPhone: '+1 (555) 789-2311',
+    id: 'ord-102',
+    orderNumber: '#102',
+    customerName: 'Pooja Iyer',
+    customerPhone: '+91 98234 56789',
     items: [
       {
         id: 'ci-3',
-        menuItem: MENU_ITEMS[3], // Wild Lavender Honey Oat Latte
-        quantity: 2,
+        menuItem: MENU_ITEMS[9], // Spanish Latte
+        quantity: 1,
         customization: {
-          milk: 'oat',
+          milk: 'condensed',
           shots: 'double',
-          syrup: 'lavender',
-          syrupPumps: 2,
+          syrup: 'none',
+          syrupPumps: 0,
           temp: 'iced',
-          sweetness: '50%',
+          sweetness: '100%',
           notes: 'Light ice'
         },
-        itemTotal: 13.50
-      }
-    ],
-    subtotal: 13.50,
-    tax: 1.08,
-    tip: 3.00,
-    total: 17.58,
-    pickupTime: '10:45 AM (Ahead)',
-    status: 'received',
-    createdAt: Date.now() - 1 * 60 * 1000, // 1 min ago
-    updatedAt: Date.now() - 1 * 60 * 1000,
-    paymentMethod: 'card',
-    paymentStatus: 'paid',
-    estimatedReadyTime: Date.now() + 9 * 60 * 1000
-  },
-  {
-    id: 'ord-8014',
-    orderNumber: '#8014',
-    customerName: 'Devon Takahashi',
-    customerPhone: '+1 (555) 441-8890',
-    items: [
+        itemTotal: 340
+      },
       {
         id: 'ci-4',
-        menuItem: MENU_ITEMS[6], // 24-Hour Kyoto Nitro Cold Brew
+        menuItem: MENU_ITEMS[24], // Brown Butter Sea Salt Brownie
         quantity: 1,
         customization: {
           milk: 'none',
           shots: 'single',
-          syrup: 'vanilla',
-          syrupPumps: 1,
-          temp: 'iced',
-          sweetness: '25%'
+          syrup: 'none',
+          syrupPumps: 0,
+          temp: 'hot',
+          sweetness: '0%'
         },
-        itemTotal: 6.00
+        itemTotal: 240
       }
     ],
-    subtotal: 6.00,
-    tax: 0.48,
-    tip: 1.50,
-    total: 7.98,
-    pickupTime: 'ASAP',
-    status: 'ready',
-    createdAt: Date.now() - 9 * 60 * 1000,
+    subtotal: 580,
+    tax: 29,
+    tip: 50,
+    total: 659,
+    pickupTime: 'In 15 mins',
+    status: 'received',
+    createdAt: Date.now() - 1 * 60 * 1000,
     updatedAt: Date.now() - 1 * 60 * 1000,
-    paymentMethod: 'google-pay',
+    paymentMethod: 'upi',
     paymentStatus: 'paid',
-    estimatedReadyTime: Date.now() - 1 * 60 * 1000
+    estimatedReadyTime: Date.now() + 12 * 60 * 1000
   }
 ];
 
@@ -161,13 +143,12 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Initialize from LocalStorage and setup cross-tab BroadcastChannel
   useEffect(() => {
     try {
-      const savedCart = localStorage.getItem('coffee_cart');
+      const savedCart = localStorage.getItem('dejabrew_cart');
       if (savedCart) setCart(JSON.parse(savedCart));
 
-      const savedOrders = localStorage.getItem('coffee_orders');
+      const savedOrders = localStorage.getItem('dejabrew_orders');
       if (savedOrders) {
         const parsed = JSON.parse(savedOrders);
         setOrders(parsed.length > 0 ? parsed : SAMPLE_ORDERS);
@@ -175,7 +156,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setOrders(SAMPLE_ORDERS);
       }
 
-      const savedActive = localStorage.getItem('coffee_active_order');
+      const savedActive = localStorage.getItem('dejabrew_active_order');
       if (savedActive) {
         setActiveOrder(JSON.parse(savedActive));
       }
@@ -192,7 +173,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     let channel: BroadcastChannel | null = null;
     try {
-      channel = new BroadcastChannel('coffee_kds_sync');
+      channel = new BroadcastChannel('dejabrew_kds_sync');
       channel.onmessage = (event) => {
         if (event.data?.type === 'ORDERS_UPDATED') {
           setOrders(event.data.orders);
@@ -210,22 +191,21 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, []);
 
-  // Sync to LocalStorage & broadcast
   const saveAndBroadcastOrders = (updatedOrders: Order[], updatedActive?: Order | null) => {
     setOrders(updatedOrders);
     try {
-      localStorage.setItem('coffee_orders', JSON.stringify(updatedOrders));
+      localStorage.setItem('dejabrew_orders', JSON.stringify(updatedOrders));
       if (updatedActive !== undefined) {
         setActiveOrder(updatedActive);
         if (updatedActive) {
-          localStorage.setItem('coffee_active_order', JSON.stringify(updatedActive));
+          localStorage.setItem('dejabrew_active_order', JSON.stringify(updatedActive));
         } else {
-          localStorage.removeItem('coffee_active_order');
+          localStorage.removeItem('dejabrew_active_order');
         }
       }
 
       if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
-        const channel = new BroadcastChannel('coffee_kds_sync');
+        const channel = new BroadcastChannel('dejabrew_kds_sync');
         channel.postMessage({
           type: 'ORDERS_UPDATED',
           orders: updatedOrders,
@@ -238,11 +218,10 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Sync cart changes to localStorage
   useEffect(() => {
     if (!isInitialized) return;
     try {
-      localStorage.setItem('coffee_cart', JSON.stringify(cart));
+      localStorage.setItem('dejabrew_cart', JSON.stringify(cart));
     } catch (e) {
       console.warn('Cart save error', e);
     }
@@ -251,11 +230,11 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const addToCart = (menuItem: MenuItem, customization: CustomizationOptions, quantity = 1) => {
     let additionalPrice = 0;
     if (customization.milk === 'oat' || customization.milk === 'almond' || customization.milk === 'coconut') {
-      additionalPrice += 0.75;
+      additionalPrice += 50;
     }
-    if (customization.shots === 'triple') additionalPrice += 1.00;
+    if (customization.shots === 'triple') additionalPrice += 60;
     if (customization.syrup !== 'none' && customization.syrupPumps > 0) {
-      additionalPrice += 0.50;
+      additionalPrice += 40;
     }
 
     const singleItemPrice = menuItem.price + additionalPrice;
@@ -271,6 +250,26 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     setCart((prev) => [...prev, newItem]);
     setIsCartOpen(true);
+  };
+
+  const addPairingToCart = (drinkItem: MenuItem, snackItem: MenuItem) => {
+    addToCart(drinkItem, drinkItem.defaultCustomization || {
+      milk: 'whole',
+      shots: 'double',
+      syrup: 'none',
+      syrupPumps: 0,
+      temp: 'hot',
+      sweetness: '0%',
+    }, 1);
+
+    addToCart(snackItem, {
+      milk: 'none',
+      shots: 'single',
+      syrup: 'none',
+      syrupPumps: 0,
+      temp: 'hot',
+      sweetness: '0%',
+    }, 1);
   };
 
   const removeFromCart = (cartItemId: string) => {
@@ -302,8 +301,8 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const cartSubtotal = cart.reduce((sum, item) => sum + item.itemTotal, 0);
-  const cartTax = Number((cartSubtotal * 0.08).toFixed(2));
-  const cartTotal = Number((cartSubtotal + cartTax).toFixed(2));
+  const cartTax = Math.round(cartSubtotal * 0.05); // 5% GST
+  const cartTotal = cartSubtotal + cartTax;
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const createOrder = async (data: {
@@ -311,12 +310,12 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     customerPhone?: string;
     customerEmail?: string;
     pickupTime: string;
-    paymentMethod: 'card' | 'apple-pay' | 'google-pay' | 'counter';
+    paymentMethod: 'upi' | 'card' | 'apple-pay' | 'google-pay' | 'counter';
     tip?: number;
   }): Promise<Order> => {
-    const nextNum = 8010 + orders.length + 1;
+    const nextNum = 100 + orders.length + 1;
     const tip = data.tip || 0;
-    const totalWithTip = Number((cartTotal + tip).toFixed(2));
+    const totalWithTip = cartTotal + tip;
 
     const newOrder: Order = {
       id: `ord-${nextNum}`,
@@ -335,7 +334,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       updatedAt: Date.now(),
       paymentMethod: data.paymentMethod,
       paymentStatus: 'paid',
-      estimatedReadyTime: Date.now() + 10 * 60 * 1000 // 10 minutes
+      estimatedReadyTime: Date.now() + 10 * 60 * 1000
     };
 
     const updated = [newOrder, ...orders];
@@ -376,6 +375,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       value={{
         cart,
         addToCart,
+        addPairingToCart,
         removeFromCart,
         updateQuantity,
         clearCart,

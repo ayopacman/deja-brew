@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useOrder } from '../../context/OrderContext';
-import { X, CreditCard, ShieldCheck, CheckCircle2, Loader2, Sparkles, Smartphone, Heart } from 'lucide-react';
+import { X, CreditCard, ShieldCheck, CheckCircle2, Loader2, Sparkles, Smartphone, QrCode } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { playSoundEffect } from '../../utils/sound';
 
@@ -23,16 +23,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const router = useRouter();
   const { createOrder, cartTotal, setIsCartOpen } = useOrder();
 
-  const [name, setName] = useState('Emily Johnson');
-  const [phone, setPhone] = useState('(555) 234-8899');
-  const [email, setEmail] = useState('emily.j@example.com');
-  const [paymentMethod, setPaymentMethod] = useState<'apple-pay' | 'card' | 'google-pay' | 'counter'>('apple-pay');
+  const [name, setName] = useState('Aarav Sharma');
+  const [phone, setPhone] = useState('+91 98765 43210');
+  const [email, setEmail] = useState('aarav@example.com');
+  const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'apple-pay' | 'google-pay' | 'counter'>('upi');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   if (!isOpen) return null;
 
-  const total = Number((cartTotal + tipAmount).toFixed(2));
+  const total = cartTotal + tipAmount;
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,11 +87,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         <div className="p-4 bg-[#FFF0F3] border-b border-[#F8D7DF] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-[#E84A74] flex items-center justify-center text-white">
-              <Heart className="w-4 h-4" />
+              <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-serif font-bold text-base text-[#2D2020]">SweetCrumbs Checkout</h3>
-              <p className="text-[10px] text-[#8C7575]">Instant Order Ahead & Pickup</p>
+              <h3 className="font-serif font-black text-base text-[#2D2020]">deja brew Checkout</h3>
+              <p className="text-[10px] text-[#8C7575]">Instant Order Ahead & Barista Handoff</p>
             </div>
           </div>
           {!isProcessing && !isSuccess && (
@@ -112,11 +112,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </div>
             <h3 className="font-serif font-bold text-2xl text-[#2D2020]">Order Placed!</h3>
             <p className="text-xs text-[#8C7575] max-w-xs">
-              Your sweet treats are being queued right away in our kitchen display!
+              Your drink ticket is now live on the barista kitchen display!
             </p>
             <div className="flex items-center gap-2 text-xs font-semibold text-[#E84A74] bg-[#FFF0F3] px-4 py-2 rounded-xl border border-[#F8D7DF]">
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Redirecting to live tracker...</span>
+              <span>Opening live tracker...</span>
             </div>
           </div>
         ) : (
@@ -166,15 +166,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
-                  onClick={() => setPaymentMethod('apple-pay')}
+                  onClick={() => setPaymentMethod('upi')}
                   className={`p-2.5 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all ${
-                    paymentMethod === 'apple-pay'
+                    paymentMethod === 'upi'
                       ? 'bg-[#FDE8ED] border-[#E84A74] text-[#E84A74] font-bold'
                       : 'bg-[#FFF8F8] border-[#F8D7DF] text-[#8C7575]'
                   }`}
                 >
-                  <Smartphone className="w-4 h-4" />
-                  <span className="text-[10px]">Apple Pay</span>
+                  <QrCode className="w-4 h-4" />
+                  <span className="text-[10px]">UPI / QR</span>
                 </button>
 
                 <button
@@ -186,8 +186,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       : 'bg-[#FFF8F8] border-[#F8D7DF] text-[#8C7575]'
                   }`}
                 >
-                  <Sparkles className="w-4 h-4" />
-                  <span className="text-[10px]">Google Pay</span>
+                  <Smartphone className="w-4 h-4" />
+                  <span className="text-[10px]">GPay / PhonePe</span>
                 </button>
 
                 <button
@@ -200,15 +200,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   }`}
                 >
                   <CreditCard className="w-4 h-4" />
-                  <span className="text-[10px]">Card</span>
+                  <span className="text-[10px]">Card / Counter</span>
                 </button>
               </div>
             </div>
 
             {/* Total */}
             <div className="p-3 bg-[#FFF0F3] rounded-xl border border-[#F8D7DF] flex justify-between items-center text-xs">
-              <span className="text-[#8C7575] font-medium">Total Amount:</span>
-              <span className="font-serif font-bold text-base text-[#E84A74]">${total.toFixed(2)}</span>
+              <span className="text-[#8C7575] font-medium">Total Payable:</span>
+              <span className="font-mono font-bold text-base text-[#E84A74]">₹{total}</span>
             </div>
 
             {/* CTA */}
@@ -220,10 +220,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               {isProcessing ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Processing...</span>
+                  <span>Processing Payment...</span>
                 </>
               ) : (
-                <span>Pay & Place Order (${total.toFixed(2)})</span>
+                <span>Pay ₹{total} & Send to Barista</span>
               )}
             </button>
           </form>

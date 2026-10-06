@@ -2,24 +2,30 @@
 
 import React, { useState } from 'react';
 import { CoffeeCategory } from '../../types/coffee';
-import { MENU_ITEMS } from '../../data/coffeeData';
+import { MENU_ITEMS, RECOMMENDED_PAIRINGS } from '../../data/coffeeData';
 import { MenuCard } from '../../components/menu/MenuCard';
+import { BookletMenuView } from '../../components/menu/BookletMenuView';
+import { CustomizationModal } from '../../components/menu/CustomizationModal';
 import { useOrder } from '../../context/OrderContext';
-import { Search, Cake, Sparkles } from 'lucide-react';
+import { Search, Coffee, BookOpen, Layers } from 'lucide-react';
+import { MenuItem } from '../../types/coffee';
 
 export default function OrderPage() {
-  const { addToCart } = useOrder();
+  const { addToCart, addPairingToCart } = useOrder();
   const [selectedCategory, setSelectedCategory] = useState<CoffeeCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'booklet' | 'grid'>('booklet');
+  const [selectedCustomItem, setSelectedCustomItem] = useState<MenuItem | null>(null);
 
   const categories: { id: CoffeeCategory | 'all'; label: string; count: number }[] = [
-    { id: 'all', label: 'All Treats & Coffee', count: MENU_ITEMS.length },
-    { id: 'pastries', label: 'Cakes & Cupcakes', count: MENU_ITEMS.filter((i) => i.category === 'pastries').length },
-    { id: 'signature-lattes', label: 'Signature Lattes', count: MENU_ITEMS.filter((i) => i.category === 'signature-lattes').length },
-    { id: 'espresso', label: 'Artisan Espresso', count: MENU_ITEMS.filter((i) => i.category === 'espresso').length },
-    { id: 'cold-brew', label: 'Cold Brew & Nitro', count: MENU_ITEMS.filter((i) => i.category === 'cold-brew').length },
-    { id: 'pour-over', label: 'Pour Over Filter', count: MENU_ITEMS.filter((i) => i.category === 'pour-over').length },
-    { id: 'beans', label: 'Specialty Beans', count: MENU_ITEMS.filter((i) => i.category === 'beans').length },
+    { id: 'all', label: 'All Items', count: MENU_ITEMS.length },
+    { id: 'espresso', label: 'Espresso Classics', count: MENU_ITEMS.filter((i) => i.category === 'espresso').length },
+    { id: 'milk-based', label: 'Milk-Based & Lattes', count: MENU_ITEMS.filter((i) => i.category === 'milk-based').length },
+    { id: 'brewed', label: 'Brewed & Filter', count: MENU_ITEMS.filter((i) => i.category === 'brewed').length },
+    { id: 'iced', label: 'Iced & Cold Brew', count: MENU_ITEMS.filter((i) => i.category === 'iced').length },
+    { id: 'hybrids', label: 'Affogato Hybrids', count: MENU_ITEMS.filter((i) => i.category === 'hybrids').length },
+    { id: 'snacks', label: 'Artisanal Snacks', count: MENU_ITEMS.filter((i) => i.category === 'snacks').length },
+    { id: 'desserts', label: 'Desserts', count: MENU_ITEMS.filter((i) => i.category === 'desserts').length },
   ];
 
   const filteredItems = MENU_ITEMS.filter((item) => {
@@ -30,6 +36,25 @@ export default function OrderPage() {
     return matchesCategory && matchesSearch;
   });
 
+  const handleSelectItem = (item: MenuItem) => {
+    if (item.isCustomizable) {
+      setSelectedCustomItem(item);
+    } else {
+      addToCart(
+        item,
+        item.defaultCustomization || {
+          milk: 'none',
+          shots: 'single',
+          syrup: 'none',
+          syrupPumps: 0,
+          temp: 'hot',
+          sweetness: '0%',
+        },
+        1
+      );
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-[#2D2020]">
       
@@ -37,26 +62,49 @@ export default function OrderPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#F8D7DF] pb-6">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-[#E84A74]">
-            SweetCrumbs Order Ahead
+            deja brew • Order Ahead
           </span>
-          <h1 className="font-serif font-bold text-3xl sm:text-4xl text-[#2D2020] mt-1">
-            Artisan Cakes, Treats & Coffee
+          <h1 className="font-serif font-black text-3xl sm:text-4xl text-[#2D2020] mt-1">
+            The Daily Grind Menu
           </h1>
           <p className="text-xs text-[#7A6767] mt-1">
-            Order your favorite birthday cakes, fruit slices, and hand-pulled espresso drinks ahead for pickup.
+            Customize your milk, shot calibrations, syrup pumps, and pick up fresh at the bar.
           </p>
         </div>
 
-        {/* Search Input */}
-        <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 text-[#8C7575] absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search cakes, lattes, flavors..."
-            className="w-full bg-white border border-[#F8D7DF] focus:border-[#E84A74] text-[#2D2020] text-xs rounded-2xl pl-10 pr-4 py-3 focus:outline-none transition-colors shadow-xs"
-          />
+        {/* Search & View Switcher */}
+        <div className="flex items-center gap-3">
+          <div className="relative w-full md:w-64">
+            <Search className="w-4 h-4 text-[#8C7575] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search drinks, snacks..."
+              className="w-full bg-white border border-[#F8D7DF] focus:border-[#E84A74] text-[#2D2020] text-xs rounded-2xl pl-10 pr-4 py-3 focus:outline-none transition-colors shadow-xs"
+            />
+          </div>
+
+          <div className="flex items-center gap-1 bg-[#FFF0F3] p-1 rounded-xl border border-[#F8D7DF]">
+            <button
+              onClick={() => setViewMode('booklet')}
+              className={`p-2 rounded-lg text-xs font-bold ${
+                viewMode === 'booklet' ? 'bg-[#E84A74] text-white shadow-xs' : 'text-[#5D4A4A]'
+              }`}
+              title="Storybook Booklet View"
+            >
+              <BookOpen className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-lg text-xs font-bold ${
+                viewMode === 'grid' ? 'bg-[#E84A74] text-white shadow-xs' : 'text-[#5D4A4A]'
+              }`}
+              title="Card Grid View"
+            >
+              <Layers className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -65,7 +113,12 @@ export default function OrderPage() {
         {categories.map((cat) => (
           <button
             key={cat.id}
-            onClick={() => setSelectedCategory(cat.id)}
+            onClick={() => {
+              setSelectedCategory(cat.id);
+              if (viewMode === 'booklet' && cat.id !== 'all') {
+                setViewMode('grid');
+              }
+            }}
             className={`px-4 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
               selectedCategory === cat.id
                 ? 'bg-[#E84A74] text-white shadow-sm'
@@ -82,24 +135,12 @@ export default function OrderPage() {
         ))}
       </div>
 
-      {/* Grid */}
-      {filteredItems.length === 0 ? (
-        <div className="py-20 text-center space-y-3">
-          <div className="w-16 h-16 rounded-2xl bg-[#FFF0F3] mx-auto flex items-center justify-center text-[#E84A74]">
-            <Cake className="w-8 h-8" />
-          </div>
-          <h3 className="font-serif font-bold text-xl text-[#2D2020]">No matching items found</h3>
-          <p className="text-xs text-[#8C7575]">Try clearing search or checking another category.</p>
-          <button
-            onClick={() => {
-              setSelectedCategory('all');
-              setSearchQuery('');
-            }}
-            className="text-xs text-[#E84A74] font-bold underline"
-          >
-            Reset Filters
-          </button>
-        </div>
+      {/* Content View */}
+      {viewMode === 'booklet' && selectedCategory === 'all' && searchQuery === '' ? (
+        <BookletMenuView
+          onSelectItem={handleSelectItem}
+          onSelectPairing={(drink, snack) => addPairingToCart(drink, snack)}
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {filteredItems.map((item) => (
@@ -110,6 +151,16 @@ export default function OrderPage() {
             />
           ))}
         </div>
+      )}
+
+      {/* Customization Modal */}
+      {selectedCustomItem && (
+        <CustomizationModal
+          item={selectedCustomItem}
+          isOpen={!!selectedCustomItem}
+          onClose={() => setSelectedCustomItem(null)}
+          onAddToCart={(item, cust, qty) => addToCart(item, cust, qty)}
+        />
       )}
 
     </div>

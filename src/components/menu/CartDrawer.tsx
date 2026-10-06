@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useOrder } from '../../context/OrderContext';
-import { X, Trash2, Plus, Minus, Clock, ShoppingBag, ArrowRight, Heart } from 'lucide-react';
+import { X, Trash2, Plus, Minus, Clock, ShoppingBag, ArrowRight, Coffee } from 'lucide-react';
 import { CheckoutModal } from '../checkout/CheckoutModal';
 
 export const CartDrawer: React.FC = () => {
@@ -18,18 +18,13 @@ export const CartDrawer: React.FC = () => {
     setIsCartOpen,
   } = useOrder();
 
-  const [pickupTime, setPickupTime] = useState<string>('ASAP (~15 mins)');
-  const [tipPercentage, setTipPercentage] = useState<number>(15);
-  const [customTip, setCustomTip] = useState<string>('');
+  const [pickupTime, setPickupTime] = useState<string>('ASAP (~10 mins)');
+  const [tipAmount, setTipAmount] = useState<number>(30);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   if (!isCartOpen) return null;
 
-  const tipAmount = customTip !== '' 
-    ? parseFloat(customTip) || 0 
-    : Number(((cartSubtotal * tipPercentage) / 100).toFixed(2));
-
-  const finalTotal = Number((cartTotal + tipAmount).toFixed(2));
+  const finalTotal = cartTotal + tipAmount;
 
   return (
     <>
@@ -42,11 +37,11 @@ export const CartDrawer: React.FC = () => {
           <div className="p-4 border-b border-[#F8D7DF] flex items-center justify-between bg-[#FFF0F3]">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-[#E84A74] flex items-center justify-center text-white shadow-xs">
-                <ShoppingBag className="w-4 h-4" />
+                <Coffee className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="font-serif font-bold text-base text-[#2D2020]">Your Sweet Box</h3>
-                <p className="text-[11px] text-[#8C7575]">Order Ahead & Pickup</p>
+                <h3 className="font-serif font-black text-base text-[#2D2020]">deja brew Order</h3>
+                <p className="text-[11px] text-[#8C7575]">Counter Pickup & Brew Queue</p>
               </div>
             </div>
 
@@ -73,17 +68,17 @@ export const CartDrawer: React.FC = () => {
             {cart.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
                 <div className="w-16 h-16 rounded-full bg-[#FFF0F3] flex items-center justify-center text-[#E84A74]">
-                  <Heart className="w-8 h-8" />
+                  <Coffee className="w-8 h-8" />
                 </div>
                 <h4 className="font-serif font-bold text-lg text-[#2D2020]">Your bag is empty</h4>
                 <p className="text-xs text-[#8C7575] max-w-xs">
-                  Treat yourself to our artisan strawberry fruit cake, chocolate bliss, or signature rose lattes!
+                  Discover our freshly pulled double ristrettos, Spanish lattes, and almond croissants!
                 </p>
                 <button
                   onClick={() => setIsCartOpen(false)}
                   className="mt-2 bg-[#E84A74] hover:bg-[#D43862] text-white text-xs font-semibold py-2.5 px-5 rounded-xl shadow-sm transition-all"
                 >
-                  Browse Menu
+                  Explore Menu
                 </button>
               </div>
             ) : (
@@ -105,12 +100,17 @@ export const CartDrawer: React.FC = () => {
                           {item.menuItem.name}
                         </h4>
                         <span className="font-bold text-xs text-[#E84A74]">
-                          ${item.itemTotal.toFixed(2)}
+                          ₹{item.itemTotal}
                         </span>
                       </div>
 
                       {/* Customization Details */}
                       <div className="mt-1 flex flex-wrap gap-1 text-[10px] text-[#8C7575]">
+                        {item.customization.temp && (
+                          <span className="bg-[#FFF0F3] px-1.5 py-0.5 rounded capitalize">
+                            {item.customization.temp}
+                          </span>
+                        )}
                         {item.customization.milk !== 'none' && (
                           <span className="bg-[#FFF0F3] px-1.5 py-0.5 rounded capitalize">
                             {item.customization.milk} milk
@@ -118,7 +118,7 @@ export const CartDrawer: React.FC = () => {
                         )}
                         {item.customization.notes && (
                           <span className="bg-[#FDE8ED] text-[#E84A74] px-1.5 py-0.5 rounded">
-                            {item.customization.notes}
+                            Note: {item.customization.notes}
                           </span>
                         )}
                       </div>
@@ -152,14 +152,14 @@ export const CartDrawer: React.FC = () => {
                   </div>
                 ))}
 
-                {/* Pickup Time */}
+                {/* Pickup Window */}
                 <div className="p-3 bg-white border border-[#F8D7DF] rounded-2xl space-y-2">
                   <div className="flex items-center gap-1.5 text-xs font-semibold text-[#8C7575]">
                     <Clock className="w-3.5 h-3.5 text-[#E84A74]" />
-                    <span>Pickup Window</span>
+                    <span>Pickup Time</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    {['ASAP (~15 mins)', 'In 30 mins', 'In 1 hour', 'Schedule for later'].map((time) => (
+                    {['ASAP (~10 mins)', 'In 20 mins', 'In 35 mins', 'Schedule later'].map((time) => (
                       <button
                         key={time}
                         onClick={() => setPickupTime(time)}
@@ -175,27 +175,24 @@ export const CartDrawer: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Baker Tip */}
+                {/* Barista Tip */}
                 <div className="p-3 bg-white border border-[#F8D7DF] rounded-2xl space-y-2">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-semibold text-[#8C7575]">Add Baker & Barista Tip</span>
-                    <span className="text-[#E84A74] font-bold">${tipAmount.toFixed(2)}</span>
+                    <span className="font-semibold text-[#8C7575]">Barista Tip</span>
+                    <span className="text-[#E84A74] font-bold">₹{tipAmount}</span>
                   </div>
                   <div className="grid grid-cols-4 gap-1.5">
-                    {[10, 15, 20, 25].map((pct) => (
+                    {[0, 20, 30, 50].map((t) => (
                       <button
-                        key={pct}
-                        onClick={() => {
-                          setTipPercentage(pct);
-                          setCustomTip('');
-                        }}
+                        key={t}
+                        onClick={() => setTipAmount(t)}
                         className={`py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                          tipPercentage === pct && customTip === ''
+                          tipAmount === t
                             ? 'bg-[#E84A74] text-white border-[#E84A74]'
                             : 'bg-[#FFF0F3] border-[#F8D7DF] text-[#5D4A4A]'
                         }`}
                       >
-                        {pct}%
+                        {t === 0 ? 'No Tip' : `₹${t}`}
                       </button>
                     ))}
                   </div>
@@ -204,27 +201,27 @@ export const CartDrawer: React.FC = () => {
             )}
           </div>
 
-          {/* Footer Checkout Summary */}
+          {/* Footer Checkout */}
           {cart.length > 0 && (
             <div className="p-4 bg-white border-t border-[#F8D7DF] space-y-3">
               <div className="space-y-1 text-xs text-[#8C7575]">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="text-[#2D2020]">${cartSubtotal.toFixed(2)}</span>
+                  <span className="text-[#2D2020]">₹{cartSubtotal}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Tax</span>
-                  <span className="text-[#2D2020]">${cartTax.toFixed(2)}</span>
+                  <span>GST (5%)</span>
+                  <span className="text-[#2D2020]">₹{cartTax}</span>
                 </div>
                 {tipAmount > 0 && (
                   <div className="flex justify-between">
-                    <span>Baker Tip</span>
-                    <span className="text-[#E84A74]">+${tipAmount.toFixed(2)}</span>
+                    <span>Barista Tip</span>
+                    <span className="text-[#E84A74]">+₹{tipAmount}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm font-bold text-[#2D2020] pt-2 border-t border-[#F8D7DF]">
-                  <span>Total</span>
-                  <span className="font-serif text-base text-[#E84A74]">${finalTotal.toFixed(2)}</span>
+                  <span>Total Payable</span>
+                  <span className="font-mono font-bold text-base text-[#E84A74]">₹{finalTotal}</span>
                 </div>
               </div>
 
@@ -232,9 +229,9 @@ export const CartDrawer: React.FC = () => {
                 onClick={() => setIsCheckoutOpen(true)}
                 className="w-full bg-[#E84A74] hover:bg-[#D43862] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-between shadow-md shadow-[#E84A74]/20 transition-all hover:scale-[1.01]"
               >
-                <span>Checkout & Order</span>
-                <div className="flex items-center gap-1 font-serif text-sm">
-                  <span>${finalTotal.toFixed(2)}</span>
+                <span>Checkout & Brew Ticket</span>
+                <div className="flex items-center gap-1 font-mono text-sm">
+                  <span>₹{finalTotal}</span>
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </div>
               </button>
