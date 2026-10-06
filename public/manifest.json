@@ -1,0 +1,21 @@
+{
+  "name": "Click & Sip Specialty Coffee PWA",
+  "short_name": "Click & Sip",
+  "description": "Artisan coffee ordering, real-time barista pickup tracking, and bean tasting club.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#14110F",
+  "theme_color": "#965B32",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
